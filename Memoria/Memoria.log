@@ -1,7 +1,7 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (MiKTeX 2.9) (preloaded format=pdflatex 2013.10.19)  23 OCT 2013 16:21
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (MiKTeX 2.9) (preloaded format=pdflatex 2013.10.19)  23 OCT 2013 16:48
 entering extended mode
 **Memoria.tex
-(O:\Tom\workspace4\CloudMiner\Memoria\Memoria.tex
+(C:\Users\Arturo\Software\workspace_django\Wrapper\Memoria\Memoria.tex
 LaTeX2e <2011/06/27>
 Babel <v3.8m> and hyphenation patterns for english, afrikaans, ancientgreek, ar
 abic, armenian, assamese, basque, bengali, bokmal, bulgarian, catalan, coptic, 
@@ -66,7 +66,7 @@ Package: ltxcmds 2011/11/09 v1.22 LaTeX kernel commands for general use (HO)
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\syntonly.sty"
 Package: syntonly 1999/09/17 v2.1e Standard LaTeX2e package
 )
-(O:\Tom\workspace4\CloudMiner\Memoria\Memoria.aux)
+(C:\Users\Arturo\Software\workspace_django\Wrapper\Memoria\Memoria.aux)
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 14.
 LaTeX Font Info:    ... okay on input line 14.
 LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 14.
@@ -93,7 +93,7 @@ LaTeX Font Info:    ... okay on input line 14.
 \MPnumerator=\count93
 \makeMPintoPDFobject=\count94
 \everyMPtoPDFconversion=\toks16
-) (O:\Tom\workspace4\CloudMiner\Memoria\titlepage.tex
+) (C:\Users\Arturo\Software\workspace_django\Wrapper\Memoria\titlepage.tex
 <./logoucm.jpg, id=1, 689.57625pt x 715.67375pt>
 File: ./logoucm.jpg Graphic file (type jpg)
  <use ./logoucm.jpg>
@@ -101,9 +101,9 @@ Package pdftex.def Info: ./logoucm.jpg used on input line 16.
 (pdftex.def)             Requested size: 195.0pt x 202.37477pt.
  [1
 
-{C:/ProgramData/MiKTeX/2.9/pdftex/config/pdftex.map} <O:/Tom/workspace4/CloudMi
-ner/Memoria/logoucm.jpg>]) (O:\Tom\workspace4\CloudMiner\Memoria\authorization.
-tex
+{C:/ProgramData/MiKTeX/2.9/pdftex/config/pdftex.map} <C:/Users/Arturo/Software/
+workspace_django/Wrapper/Memoria/logoucm.jpg>] [2])
+(C:\Users\Arturo\Software\workspace_django\Wrapper\Memoria\authorization.tex
 Underfull \hbox (badness 10000) in paragraph at lines 3--4
 
  []
@@ -129,24 +129,24 @@ Underfull \hbox (badness 10000) in paragraph at lines 14--15
 
  []
 
-) [1] (O:\Tom\workspace4\CloudMiner\Memoria\Memoria.aux) ) 
+) [1] (C:\Users\Arturo\Software\workspace_django\Wrapper\Memoria\Memoria.aux) )
+ 
 Here is how much of TeX's memory you used:
  1156 strings out of 493921
- 15520 string characters out of 3144875
+ 15751 string characters out of 3144872
  64589 words of memory out of 3000000
  4487 multiletter control sequences out of 15000+200000
  5818 words of font info for 22 fonts, out of 3000000 for 9000
  841 hyphenation exceptions out of 8191
- 27i,4n,21p,240b,183s stack positions out of 5000i,500n,10000p,200000b,50000s
-<C:/Program Files (x8
-6)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Program Files (x86)
-/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmcsc10.pfb><C:/Program Files (x86)/
-MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Program Files (x86)/MiK
-TeX 2.9/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Program Files (x86)/MiKTeX
- 2.9/fonts/type1/public/amsfonts/cm/cmti12.pfb>
-Output written on Memoria.pdf (2 pages, 155959 bytes).
+ 27i,4n,21p,240b,215s stack positions out of 5000i,500n,10000p,200000b,50000s
+<C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C
+:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmcsc10.pfb><C:
+/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Pr
+ogram Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Progr
+am Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmti12.pfb>
+Output written on Memoria.pdf (3 pages, 156581 bytes).
 PDF statistics:
- 30 PDF objects out of 1000 (max. 8388607)
+ 33 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  6 words of extra memory for PDF output out of 10000 (max. 10000000)
 
