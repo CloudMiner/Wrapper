@@ -6,15 +6,16 @@ Created on 20/10/2013
 import socket
 import asyncore
 import logging
-# import ServerParser
+from ServerParser import ServerParser
+from ServerController import ServerController
 # import ServerLauncher
 
 class EchoServer(asyncore.dispatcher):
     """Receives connections and establishes handlers for each client.
     """
         
-#     parser = ServerParser.ServerParser()        #gets parser instance
-#     launcher = ServerLauncher.ServerLauncher()  #gets launcher instance    
+    parser     = ServerParser()        #gets parser instance
+    controller = ServerController()    #gets controller instance 
         
     def __init__(self, address):
         self.logger = logging.getLogger('EchoServer')
@@ -30,7 +31,11 @@ class EchoServer(asyncore.dispatcher):
         # Called when a client connects to our socket
         client_info = self.accept()
         self.logger.debug('handle_accept() -> %s', client_info[1])
-        EchoHandler(sock=client_info[0])
+        # Create Handler
+        EchoHandler(sock = client_info[0], \
+                    srv_parser = self.parser,\
+                    srv_ctrl = self.controller,\
+                    chunk_size=256)
         # We only want to deal with one client at a time,
         # so close as soon as we set up the handler.
         # Normally you would not do this and the server
@@ -49,9 +54,11 @@ class EchoHandler(asyncore.dispatcher):
     """Handles echoing messages from a single client.
     """
     
-    def __init__(self, sock, chunk_size=256):
+    def __init__(self, sock, srv_parser, srv_ctrl, chunk_size=256):
         self.chunk_size = chunk_size
-        self.logger = logging.getLogger('EchoHandler%s' % str(sock.getsockname()))
+        self.parser     = srv_parser
+        self.controller = srv_ctrl
+        self.logger     = logging.getLogger('EchoHandler%s' % str(sock.getsockname()))
         asyncore.dispatcher.__init__(self, sock=sock)
         self.data_to_write = []
         return
@@ -77,8 +84,8 @@ class EchoHandler(asyncore.dispatcher):
         """Read an incoming message from the client and put it into our outgoing queue."""
         data = self.recv(self.chunk_size)
         self.logger.debug('handle_read() -> (%d) "%s"', len(data), data)
-        
-        #self.parser.parse_cmd(data)
+        cmd = self.parser.parse_cmd(data)
+        self.controller.execute_cmd(cmd)
         #sself.launcher.execute_cmd(data)
         
         self.data_to_write.insert(0, data)
