@@ -34,8 +34,8 @@ class EchoServer(asyncore.dispatcher):
         # Create Handler
         EchoHandler(sock = client_info[0], \
                     srv_parser = self.parser,\
-                    srv_ctrl = self.controller,\
-                    chunk_size=256)
+                    srv_ctrl   = self.controller,\
+                    chunk_size = 256)
         # We only want to deal with one client at a time,
         # so close as soon as we set up the handler.
         # Normally you would not do this and the server
@@ -86,8 +86,8 @@ class EchoHandler(asyncore.dispatcher):
         self.logger.debug('handle_read() -> (%d) "%s"', len(data), data)
         cmd = self.parser.parse_cmd(data)
         self.controller.execute_cmd(cmd)
-        #sself.launcher.execute_cmd(data)
         
+        #Callback
         self.data_to_write.insert(0, data)
     
     def handle_close(self):
