@@ -3,9 +3,10 @@ import asyncore
 from EchoServer import EchoServer
 from EchoClient import EchoClient
 from ServerParser import ServerParser
+from PruebaPopen import PruebaPopen
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG,
+    '''logging.basicConfig(level=logging.DEBUG,
                         format='%(name)s: %(message)s',
                         )
 
@@ -16,7 +17,8 @@ if __name__ == '__main__':
     client = EchoClient(ip, port, message=open('instructions.txt', 'r').read())
     
     asyncore.loop()
-    '''p = ServerParser()
+    
+    p = ServerParser()
     p.parse_cmd("")
     p.parse_cmd("ss")
     p.parse_cmd("start")
@@ -27,4 +29,5 @@ if __name__ == '__main__':
     p.parse_cmd("sTArt lTc")
     p.parse_cmd("sTArt bTc")'''
     
-    
+    p2 = PruebaPopen()
+    p2.prueba_algo()        
