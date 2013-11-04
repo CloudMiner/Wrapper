@@ -5,6 +5,21 @@ from EchoClient import EchoClient
 from ServerParser import ServerParser
 from PruebaPopen import PruebaPopen
 
+from time import sleep
+
+from multiprocessing import Process
+
+def monitor():
+    while True:
+        with open("C:\\miners\\cgminer\\logfile.txt",'rb') as fh:
+            first = next(fh).decode()
+            fh.seek(-1024, 2)
+            last = fh.readlines()[-1].decode()
+        f = open('result.txt','a')
+        f.write(last[last.find(')')+2:last.find('M')] + "MH/s\n")
+        f.close()
+        sleep(5)
+
 if __name__ == '__main__':
     '''logging.basicConfig(level=logging.DEBUG,
                         format='%(name)s: %(message)s',
@@ -16,18 +31,9 @@ if __name__ == '__main__':
     ip, port = server.address # find out what port we were given
     client = EchoClient(ip, port, message=open('instructions.txt', 'r').read())
     
-    asyncore.loop()
+    asyncore.loop()'''
     
-    p = ServerParser()
-    p.parse_cmd("")
-    p.parse_cmd("ss")
-    p.parse_cmd("start")
-    p.parse_cmd("stop")
-    p.parse_cmd("una prueba")
-    p.parse_cmd("start prueba")
-    p.parse_cmd("start ltc")
-    p.parse_cmd("sTArt lTc")
-    p.parse_cmd("sTArt bTc")'''
-    
-    p2 = PruebaPopen()
-    p2.prueba_algo()        
+    p = Process(target = monitor)
+    p.start()
+    sleep(30)
+    p.terminate()
