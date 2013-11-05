@@ -7,16 +7,17 @@ import socket
 import asyncore
 import logging
 
-class EchoClient(asyncore.dispatcher):
-    """Sends messages to the server and receives responses.
-    """
+class HeadNode(asyncore.dispatcher):
+    '''
+    Sends messages to the worker node and receives responses.
+    '''
     
     def __init__(self, host, port, message, chunk_size=512):
         self.message = message
         self.to_send = message
         self.received_data = []
         self.chunk_size = chunk_size
-        self.logger = logging.getLogger('EchoClient')
+        self.logger = logging.getLogger('HeadNode')
         asyncore.dispatcher.__init__(self)
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
         self.logger.debug('connecting to %s', (host, port))

@@ -6,19 +6,19 @@ Created on 20/10/2013
 import socket
 import asyncore
 import logging
-from ServerParser import ServerParser
-from ServerController import ServerController
-# import ServerLauncher
+import WorkerParser
+import WorkerController
 
-class EchoServer(asyncore.dispatcher):
-    """Receives connections and establishes handlers for each client.
-    """
+class WorkerNode(asyncore.dispatcher):
+    '''
+    Receives connections and establishes handlers for each client.
+    '''
         
-    parser     = ServerParser()        #gets parser instance
-    controller = ServerController()    #gets controller instance 
+    parser     = WorkerParser.WorkerParser()             #gets parser instance
+    controller = WorkerController.WorkerController()     #gets controller instance 
         
     def __init__(self, address):
-        self.logger = logging.getLogger('EchoServer')
+        self.logger = logging.getLogger('WorkerNode')
         asyncore.dispatcher.__init__(self)
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
         self.bind(address)
@@ -58,7 +58,7 @@ class EchoHandler(asyncore.dispatcher):
         self.chunk_size = chunk_size
         self.parser     = srv_parser
         self.controller = srv_ctrl
-        self.logger     = logging.getLogger('EchoHandler%s' % str(sock.getsockname()))
+        self.logger     = logging.getLogger('WorkerHandler%s' % str(sock.getsockname()))
         asyncore.dispatcher.__init__(self, sock=sock)
         self.data_to_write = []
         return

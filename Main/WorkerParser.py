@@ -4,7 +4,7 @@ Created on 25/10/2013
 @author: hackturo
 '''
 
-class ServerParser(object):
+class WorkerParser(object):
     '''
     classdocs
     '''
