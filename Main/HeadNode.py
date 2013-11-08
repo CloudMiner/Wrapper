@@ -6,6 +6,7 @@ Created on 20/10/2013
 import socket
 import asyncore
 import logging
+from cStringIO import StringIO
 
 from time import sleep
 
@@ -18,7 +19,8 @@ class HeadNode(asyncore.dispatcher):
         self.busy = False
         self.message = message
         self.to_send = ""
-        self.received_data = []
+        #self.received_data = []
+        self.read_buffer = StringIO()
         self.chunk_size = chunk_size
         self.logger = logging.getLogger('HeadNode')
         asyncore.dispatcher.__init__(self)
@@ -34,6 +36,7 @@ class HeadNode(asyncore.dispatcher):
         self.busy = False
         self.logger.debug('handle_close()')
         self.close()
+        '''
         received_message = ''.join(self.received_data)
         if received_message == self.message:
             self.logger.debug('RECEIVED COPY OF MESSAGE')
@@ -41,6 +44,7 @@ class HeadNode(asyncore.dispatcher):
             self.logger.debug('ERROR IN TRANSMISSION')
             self.logger.debug('EXPECTED "%s"', self.message)
             self.logger.debug('RECEIVED "%s"', received_message)
+            '''
         return
     
     def writable(self):
@@ -55,8 +59,8 @@ class HeadNode(asyncore.dispatcher):
     def handle_read(self):
         data = self.recv(self.chunk_size)
         self.logger.debug('handle_read() -> (%d) "%s"', len(data), data)
-        self.received_data.append(data)
-        self.busy = False
+        #self.received_data.append(data)
+        self.read_buffer.write(data)
     
     def send_command(self, command):
         self.to_send = command

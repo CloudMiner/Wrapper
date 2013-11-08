@@ -12,9 +12,13 @@ from multiprocessing import Process
     
 def client_process(addr):
     client = HeadNode(addr)
+    
     client.send_command("start BTC")
-    #client.send_command("stop")
     asyncore.loop()
+    received = client.read_buffer.getvalue()
+    print "lol: ", len(received)
+    #client.send_command("stop")
+    
     
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG,
