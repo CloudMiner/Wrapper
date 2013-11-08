@@ -7,27 +7,31 @@ import socket
 import asyncore
 import logging
 
+from time import sleep
+
 class HeadNode(asyncore.dispatcher):
     '''
     Sends messages to the worker node and receives responses.
     '''
     
-    def __init__(self, host, port, message, chunk_size=512):
+    def __init__(self, address, message="", chunk_size=512):
+        self.busy = False
         self.message = message
-        self.to_send = message
+        self.to_send = ""
         self.received_data = []
         self.chunk_size = chunk_size
         self.logger = logging.getLogger('HeadNode')
         asyncore.dispatcher.__init__(self)
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.logger.debug('connecting to %s', (host, port))
-        self.connect((host, port))
+        self.logger.debug('connecting to %s', address)
+        self.connect(address)
         return
         
     def handle_connect(self):
         self.logger.debug('handle_connect()')
     
     def handle_close(self):
+        self.busy = False
         self.logger.debug('handle_close()')
         self.close()
         received_message = ''.join(self.received_data)
@@ -52,3 +56,7 @@ class HeadNode(asyncore.dispatcher):
         data = self.recv(self.chunk_size)
         self.logger.debug('handle_read() -> (%d) "%s"', len(data), data)
         self.received_data.append(data)
+        self.busy = False
+    
+    def send_command(self, command):
+        self.to_send = command

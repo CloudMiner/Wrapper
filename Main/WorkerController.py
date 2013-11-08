@@ -22,11 +22,12 @@ class WorkerController(object):
         print "Controller created"
     
     def monitor(self):
-        sleep(5) # este sleep se deberia hacer parametrico, indica el tiempo de refresco, deberia ser el mismo que para el miner - 1
         i = 0
-        while True:        
+        while i < 10:        
             print str(i) +" MH/s"
+            sleep(1)
             i += 1
+        return
             
     '''
     def monitor():
@@ -45,6 +46,5 @@ class WorkerController(object):
         print str(cmd) + " executed"
         p = Process(target = self.monitor)
         p.start()
-        sleep(6) # este sleep es innecesario, se reemplazara por la recepcion de la orden "STOP"
-        p.terminate()
+        #p.terminate()
         sleep(1)
