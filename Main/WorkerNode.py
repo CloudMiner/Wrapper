@@ -32,7 +32,7 @@ class WorkerNode(asyncore.dispatcher):
         client_info = self.accept()
         self.logger.debug('handle_accept() -> %s', client_info[1])
         # Create Handler
-        EchoHandler(sock = client_info[0], \
+        WorkerHandler(sock = client_info[0], \
                     srv_parser = self.parser,\
                     srv_ctrl   = self.controller,\
                     chunk_size = 256)
@@ -42,16 +42,16 @@ class WorkerNode(asyncore.dispatcher):
         # would run forever or until it received instructions
         # to stop.
         
-        self.handle_close()
+        #self.handle_close()
         return
     
     def handle_close(self):
-        self.logger.debug('handle_close()')
+        self.logger.debug('pseudo handle_close()')
         self.close()
         return
 
-class EchoHandler(asyncore.dispatcher):
-    """Handles echoing messages from a single client.
+class WorkerHandler(asyncore.dispatcher):
+    """Handles command messages from a single client.
     """
     
     def __init__(self, sock, srv_parser, srv_ctrl, chunk_size=256):
@@ -77,19 +77,20 @@ class EchoHandler(asyncore.dispatcher):
             remaining = data[sent:]
             self.data.to_write.append(remaining)
         self.logger.debug('handle_write() -> (%d) "%s"', sent, data[:sent])
-        if not self.writable():
-            self.handle_close()
+        #if not self.writable():
+        #    self.handle_close()
 
     def handle_read(self):
         """Read an incoming message from the client and put it into our outgoing queue."""
         data = self.recv(self.chunk_size)
         self.logger.debug('handle_read() -> (%d) "%s"', len(data), data)
-        cmd = self.parser.parse_cmd(data)
-        self.controller.execute_cmd(cmd)
+        if len(data) > 0:
+            cmd = self.parser.parse_cmd(data)
+            self.controller.execute_cmd(cmd)
         
-        #Callback
-        self.data_to_write.insert(0, data)
+            #Callback
+            self.data_to_write.insert(0, data)
     
     def handle_close(self):
-        self.logger.debug('handle_close()')
+        self.logger.debug('workerhandler closed')
         self.close()

@@ -10,7 +10,7 @@ from cStringIO import StringIO
 
 from time import sleep
 
-class HeadNode(asyncore.dispatcher):
+class TaskMaster(asyncore.dispatcher):
     '''
     Sends messages to the worker node and receives responses.
     '''
@@ -22,7 +22,7 @@ class HeadNode(asyncore.dispatcher):
         #self.received_data = []
         self.read_buffer = StringIO()
         self.chunk_size = chunk_size
-        self.logger = logging.getLogger('HeadNode')
+        self.logger = logging.getLogger('TaskMaster')
         asyncore.dispatcher.__init__(self)
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
         self.logger.debug('connecting to %s', address)
@@ -59,8 +59,15 @@ class HeadNode(asyncore.dispatcher):
     def handle_read(self):
         data = self.recv(self.chunk_size)
         self.logger.debug('handle_read() -> (%d) "%s"', len(data), data)
+        if not data:
+            return
+        print "Received ", data
         #self.received_data.append(data)
         self.read_buffer.write(data)
-    
+        self.handle_close() #cerramos el cliente cuando hayamos recibido el callback (ahora lo corrijo)
+            
     def send_command(self, command):
         self.to_send = command
+        
+    def get_callback(self):
+        return self.read_buffer.getvalue()
