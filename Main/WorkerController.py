@@ -14,16 +14,18 @@ class WorkerController(object):
     '''
     classdocs
     '''
+    p = None
     
     def __init__(self):
         '''
         Constructor
         '''
+        self.p = None
         print "Controller created"
     
     def monitor(self):
         i = 0
-        while i < 10:        
+        while True:        
             print str(i) +" MH/s"
             sleep(1)
             i += 1
@@ -44,7 +46,9 @@ class WorkerController(object):
            
     def execute_cmd(self, cmd):
         print str(cmd) + " executed"
-        p = Process(target = self.monitor)
-        p.start()
-        #p.terminate()
+        if str(cmd[0]) == "start":
+            self.p = Process(target = self.monitor)
+            self.p.start()
+        elif self.p <> None:
+            self.p.terminate()
         sleep(1)

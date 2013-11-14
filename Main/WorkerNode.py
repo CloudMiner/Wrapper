@@ -43,7 +43,7 @@ class WorkerNode(asyncore.dispatcher):
         # to stop.
         
         #self.handle_close()
-        return
+        #return
     
     def handle_close(self):
         self.logger.debug('pseudo handle_close()')
@@ -77,8 +77,8 @@ class WorkerHandler(asyncore.dispatcher):
             remaining = data[sent:]
             self.data.to_write.append(remaining)
         self.logger.debug('handle_write() -> (%d) "%s"', sent, data[:sent])
-        #if not self.writable():
-        #    self.handle_close()
+        if not self.writable():
+            self.handle_close()
 
     def handle_read(self):
         """Read an incoming message from the client and put it into our outgoing queue."""
@@ -94,3 +94,12 @@ class WorkerHandler(asyncore.dispatcher):
     def handle_close(self):
         self.logger.debug('workerhandler closed')
         self.close()
+        
+if __name__ == '__main__':
+    logging.basicConfig(level=logging.DEBUG,
+                        format='%(name)s: %(message)s',
+                        )    
+
+    address_server = ('0.0.0.0', 5006)
+    WorkerNode(address_server) 
+    asyncore.loop() 
