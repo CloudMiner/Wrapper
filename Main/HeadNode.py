@@ -5,6 +5,10 @@ Created on 14/11/2013
 '''
 import logging
 import asyncore
+import subprocess
+from time import sleep
+import datetime
+#import time
 
 from TaskMaster import TaskMaster
 
@@ -24,4 +28,9 @@ if __name__ == '__main__':
     address_client = ('127.0.0.1', 5006)
     task_process(address_client, "start BTC")
     print "==============COMANDO 1 TERMINADO==================="
-    task_process(address_client, "stop") 
+    sleep(30)
+    task_process(address_client, "stop")
+    
+    '''ts = time.time()
+    time = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+    print time'''
