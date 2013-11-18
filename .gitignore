@@ -1,4 +1,5 @@
 *.pydevproject
+*.pyc
 *.bin
 .project
 .metadata
