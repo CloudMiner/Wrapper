@@ -6,6 +6,7 @@ Created on 14/11/2013
 import logging
 import asyncore
 
+from time import sleep
 from TaskMaster import TaskMaster
 
 def task_process(addr, task):
@@ -24,4 +25,6 @@ if __name__ == '__main__':
     address_client = ('127.0.0.1', 5006)
     task_process(address_client, "start BTC")
     print "==============COMANDO 1 TERMINADO==================="
-    task_process(address_client, "stop") 
+    sleep(10)
+    task_process(address_client, "stop")
+    print "==============COMANDO 2 TERMINADO===================" 
