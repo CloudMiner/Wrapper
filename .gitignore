@@ -1,4 +1,6 @@
 *.pydevproject
+*.pyc
 *.bin
 .project
 .metadata
+log.txt
