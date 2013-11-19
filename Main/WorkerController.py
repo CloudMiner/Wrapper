@@ -12,7 +12,6 @@ import subprocess
 import datetime
 import time
 import multiprocessing
-import array
 
 class WorkerController(object):
     '''
@@ -36,6 +35,29 @@ class WorkerController(object):
             i += 1
         return
     '''        
+    
+    def tail(self,f, n, offset=None):
+        """Reads a n lines from f with an offset of offset lines.  The return
+        value is a tuple in the form ``(lines, has_more)`` where `has_more` is
+        an indicator that is `True` if there are more lines in the file.
+        """
+        avg_line_length = 60
+        to_read = n + (offset or 0)
+    
+        while 1:
+            try:
+                f.seek(-(avg_line_length * to_read), 2)
+            except IOError:
+                # woops.  apparently file is smaller than what we want
+                # to step back, go to the beginning instead
+                f.seek(0)
+            pos = f.tell()
+            lines = f.read().splitlines()
+            if len(lines) >= to_read or pos == 0:
+                return lines[-to_read:offset and -offset or None], \
+                       len(lines) > to_read or pos > 0
+            avg_line_length *= 1.3
+    
     def monitor_gpu(self):
         f = open('stats.txt','a')
         sleep(10)
@@ -60,19 +82,25 @@ class WorkerController(object):
         last_line = ''
         while True:
             f_stats = open('stats.txt','a')
-            sleep(10)
+            sleep(20)
             with open("log.txt",'rb') as f_log:
-                first = next(f_log).decode()
+                lines = self.tail(f_log,cpus)
+                #print lines
+                #print lines[0][0]+"\n"
+                #print lines[0][len(lines)-1]+"\n"
+                '''first = next(f_log).decode()
                 f_log.seek(-100, 2)
                 lines = f_log.readlines()
-                if(last_line != lines[-1].decode()):
-                    last_line = lines[-1].decode()
+                '''
+                if(last_line != lines[0][-1]):#.decode()):
+                    last_line = lines[0][-1]#.decode()
                     hashes = 0
-                    for i in range (1,cpus+1):
-                        line_cpu = lines[-i].decode()
+                    #for i in range (1,cpus+1):
+                    for line_cpu in lines[0]:
+                        #line_cpu = lines[0][i]#.decode()
                         if (line_cpu.find('hashes') > -1) :
                             hashes = hashes + int(line_cpu[line_cpu.find('hashes')+8:line_cpu.find('hashes')+12])
-                            hash_rate = line_cpu[line_cpu.find('hashes')+13:len(line_cpu)-1]
+                            hash_rate = line_cpu[line_cpu.find('hashes')+13:len(line_cpu)]
                         else:
                             hashes = 0
                             hash_rate = '???'
