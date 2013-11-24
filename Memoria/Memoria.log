@@ -1,7 +1,7 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (MiKTeX 2.9) (preloaded format=pdflatex 2013.10.19)  23 OCT 2013 16:48
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (MiKTeX 2.9) (preloaded format=pdflatex 2013.10.19)  24 NOV 2013 18:22
 entering extended mode
 **Memoria.tex
-(C:\Users\Arturo\Software\workspace_django\Wrapper\Memoria\Memoria.tex
+(C:\Users\Tomas\git\Wrapper4\Memoria\Memoria.tex
 LaTeX2e <2011/06/27>
 Babel <v3.8m> and hyphenation patterns for english, afrikaans, ancientgreek, ar
 abic, armenian, assamese, basque, bengali, bokmal, bulgarian, catalan, coptic, 
@@ -66,44 +66,89 @@ Package: ltxcmds 2011/11/09 v1.22 LaTeX kernel commands for general use (HO)
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\syntonly.sty"
 Package: syntonly 1999/09/17 v2.1e Standard LaTeX2e package
 )
-(C:\Users\Arturo\Software\workspace_django\Wrapper\Memoria\Memoria.aux)
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 14.
-LaTeX Font Info:    ... okay on input line 14.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 14.
-LaTeX Font Info:    ... okay on input line 14.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 14.
-LaTeX Font Info:    ... okay on input line 14.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 14.
-LaTeX Font Info:    ... okay on input line 14.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 14.
-LaTeX Font Info:    ... okay on input line 14.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 14.
-LaTeX Font Info:    ... okay on input line 14.
+("C:\Program Files (x86)\MiKTeX 2.9\tex\generic\babel\babel.sty"
+Package: babel 2008/07/08 v3.8m The Babel package
+
+*************************************
+* Local config file bblopts.cfg used
+*
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\00miktex\bblopts.cfg"
+File: bblopts.cfg 2006/07/31 v1.0 MiKTeX 'babel' configuration
+)
+("C:\Program Files (x86)\MiKTeX 2.9\tex\generic\babel\spanish.ldf"
+Language: spanish.ldf 2009/01/02 v5.0h Spanish support from the babel system
+
+("C:\Program Files (x86)\MiKTeX 2.9\tex\generic\babel\babel.def"
+File: babel.def 2008/07/08 v3.8m Babel common definitions
+\babel@savecnt=\count89
+\U@D=\dimen105
+)
+\es@datefmt=\count90
+\es@quottoks=\toks15
+\es@quotdepth=\count91
+Package babel Info: Making " an active character on input line 492.
+Package babel Info: Making . an active character on input line 585.
+Package babel Info: Making < an active character on input line 630.
+Package babel Info: Making > an active character on input line 630.
+))
+(C:\Users\Tomas\git\Wrapper4\Memoria\Memoria.aux
+(C:\Users\Tomas\git\Wrapper4\Memoria\titlepage.aux)
+(C:\Users\Tomas\git\Wrapper4\Memoria\authorization.aux)
+(C:\Users\Tomas\git\Wrapper4\Memoria\acknowledgements.aux)
+(C:\Users\Tomas\git\Wrapper4\Memoria\abstract.aux)
+(C:\Users\Tomas\git\Wrapper4\Memoria\chapter1.aux))
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 15.
+LaTeX Font Info:    ... okay on input line 15.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 15.
+LaTeX Font Info:    ... okay on input line 15.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 15.
+LaTeX Font Info:    ... okay on input line 15.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 15.
+LaTeX Font Info:    ... okay on input line 15.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 15.
+LaTeX Font Info:    ... okay on input line 15.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 15.
+LaTeX Font Info:    ... okay on input line 15.
 
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\context\base\supp-pdf.mkii"
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count89
-\scratchdimen=\dimen105
+\scratchcounter=\count92
+\scratchdimen=\dimen106
 \scratchbox=\box26
-\nofMPsegments=\count90
-\nofMParguments=\count91
-\everyMPshowfont=\toks15
-\MPscratchCnt=\count92
-\MPscratchDim=\dimen106
-\MPnumerator=\count93
-\makeMPintoPDFobject=\count94
-\everyMPtoPDFconversion=\toks16
-) (C:\Users\Arturo\Software\workspace_django\Wrapper\Memoria\titlepage.tex
+\nofMPsegments=\count93
+\nofMParguments=\count94
+\everyMPshowfont=\toks16
+\MPscratchCnt=\count95
+\MPscratchDim=\dimen107
+\MPnumerator=\count96
+\makeMPintoPDFobject=\count97
+\everyMPtoPDFconversion=\toks17
+) (C:\Users\Tomas\git\Wrapper4\Memoria\titlepage.tex
 <./logoucm.jpg, id=1, 689.57625pt x 715.67375pt>
 File: ./logoucm.jpg Graphic file (type jpg)
  <use ./logoucm.jpg>
 Package pdftex.def Info: ./logoucm.jpg used on input line 16.
 (pdftex.def)             Requested size: 195.0pt x 202.37477pt.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <17.28> on input line 34.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <12> on input line 34.
  [1
 
-{C:/ProgramData/MiKTeX/2.9/pdftex/config/pdftex.map} <C:/Users/Arturo/Software/
-workspace_django/Wrapper/Memoria/logoucm.jpg>] [2])
-(C:\Users\Arturo\Software\workspace_django\Wrapper\Memoria\authorization.tex
+
+{C:/ProgramData/MiKTeX/2.9/pdftex/config/pdftex.map} <C:/Users/Tomas/git/Wrappe
+r4/Memoria/logoucm.jpg>]) (C:\Users\Tomas\git\Wrapper4\Memoria\Memoria.toc
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 3.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 3.
+)
+\tf@toc=\write3
+ [1
+
+
+]
+(C:\Users\Tomas\git\Wrapper4\Memoria\authorization.tex
 Underfull \hbox (badness 10000) in paragraph at lines 3--4
 
  []
@@ -129,24 +174,60 @@ Underfull \hbox (badness 10000) in paragraph at lines 14--15
 
  []
 
-) [1] (C:\Users\Arturo\Software\workspace_django\Wrapper\Memoria\Memoria.aux) )
- 
+) [2
+
+] (C:\Users\Tomas\git\Wrapper4\Memoria\acknowledgements.tex
+Underfull \hbox (badness 10000) in paragraph at lines 2--3
+
+ []
+
+) [3
+
+
+] (C:\Users\Tomas\git\Wrapper4\Memoria\abstract.tex
+Missing character: There is no ñ in font cmr12!
+
+Underfull \hbox (badness 10000) in paragraph at lines 16--17
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 18--19
+
+ []
+
+) [4
+
+
+] (C:\Users\Tomas\git\Wrapper4\Memoria\chapter1.tex
+Cap\'{\i }tulo 1.
+) [5
+
+
+
+] (C:\Users\Tomas\git\Wrapper4\Memoria\Memoria.aux
+(C:\Users\Tomas\git\Wrapper4\Memoria\titlepage.aux)
+(C:\Users\Tomas\git\Wrapper4\Memoria\authorization.aux)
+(C:\Users\Tomas\git\Wrapper4\Memoria\acknowledgements.aux)
+(C:\Users\Tomas\git\Wrapper4\Memoria\abstract.aux)
+(C:\Users\Tomas\git\Wrapper4\Memoria\chapter1.aux)) ) 
 Here is how much of TeX's memory you used:
- 1156 strings out of 493921
- 15751 string characters out of 3144872
- 64589 words of memory out of 3000000
- 4487 multiletter control sequences out of 15000+200000
- 5818 words of font info for 22 fonts, out of 3000000 for 9000
+ 1828 strings out of 493921
+ 24885 string characters out of 3144875
+ 80544 words of memory out of 3000000
+ 5109 multiletter control sequences out of 15000+200000
+ 10090 words of font info for 36 fonts, out of 3000000 for 9000
  841 hyphenation exceptions out of 8191
- 27i,4n,21p,240b,215s stack positions out of 5000i,500n,10000p,200000b,50000s
-<C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C
-:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmcsc10.pfb><C:
-/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Pr
-ogram Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Progr
-am Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmti12.pfb>
-Output written on Memoria.pdf (3 pages, 156581 bytes).
+ 27i,4n,27p,240b,257s stack positions out of 5000i,500n,10000p,200000b,50000s
+<C:/Program Files (x86)/Mi
+KTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Program Files (x86)/MiKT
+eX 2.9/fonts/type1/public/amsfonts/cm/cmcsc10.pfb><C:/Program Files (x86)/MiKTe
+X 2.9/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Program Files (x86)/MiKTeX 2
+.9/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Program Files (x86)/MiKTeX 2.9/
+fonts/type1/public/amsfonts/cm/cmti12.pfb>
+Output written on Memoria.pdf (6 pages, 170812 bytes).
 PDF statistics:
- 33 PDF objects out of 1000 (max. 8388607)
+ 42 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  6 words of extra memory for PDF output out of 10000 (max. 10000000)
 
