@@ -4,6 +4,7 @@
 
 \usepackage[dvips]{graphicx}
 \usepackage{syntonly}
+\usepackage[spanish]{babel}
 %\syntaxonly
 
 %\title{CloudMiner}
@@ -14,7 +15,13 @@
 \begin{document}
 %\maketitle
 
-\input{./titlepage.tex}
-\input{./authorization.tex}
+\include{./titlepage}
+\newpage
+\newpage
+\tableofcontents
+\include{./authorization}
+\include{./acknowledgements}
+\include{./abstract}
+\include{./chapter1}
 
 \end{document}
