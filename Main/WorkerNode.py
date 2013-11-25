@@ -30,12 +30,13 @@ class WorkerNode(asyncore.dispatcher):
     def handle_accept(self):
         # Called when a client connects to our socket
         client_info = self.accept()
-        self.logger.debug('handle_accept() -> %s', client_info[1])
+        #self.logger.debug('handle_accept() -> %s', client_info[1])
         # Create Handler
         WorkerHandler(sock = client_info[0], \
                     srv_parser = self.parser,\
                     srv_ctrl   = self.controller,\
                     chunk_size = 256)
+        
         # We only want to deal with one client at a time,
         # so close as soon as we set up the handler.
         # Normally you would not do this and the server
@@ -46,7 +47,7 @@ class WorkerNode(asyncore.dispatcher):
         #return
     
     def handle_close(self):
-        self.logger.debug('pseudo handle_close()')
+        #self.logger.debug('pseudo handle_close()')
         self.close()
         return
 
@@ -58,15 +59,23 @@ class WorkerHandler(asyncore.dispatcher):
         self.chunk_size = chunk_size
         self.parser     = srv_parser
         self.controller = srv_ctrl
-        self.logger     = logging.getLogger('WorkerHandler%s' % str(sock.getsockname()))
+        #self.logger     = logging.getLogger('WorkerHandler%s' % str(sock.getsockname()))
         asyncore.dispatcher.__init__(self, sock=sock)
+        self.data_received = ""
         self.data_to_write = []
         return
+    
+    def work(self):
+        data = self.data_received
+        print "Hemos recibido el siguiente comando: " + data
+        if len(data) > 0:
+            cmd = self.parser.parse_cmd(data)
+            self.controller.execute_cmd(cmd)
     
     def writable(self):
         """We want to write if we have received data."""
         response = bool(self.data_to_write)
-        self.logger.debug('writable() -> %s', response)
+        #self.logger.debug('writable() -> %s', response)
         return response
     
     def handle_write(self):
@@ -76,30 +85,28 @@ class WorkerHandler(asyncore.dispatcher):
         if sent < len(data):
             remaining = data[sent:]
             self.data.to_write.append(remaining)
-        self.logger.debug('handle_write() -> (%d) "%s"', sent, data[:sent])
+        #self.logger.debug('handle_write() -> (%d) "%s"', sent, data[:sent])
         if not self.writable():
             self.handle_close()
 
     def handle_read(self):
         """Read an incoming message from the client and put it into our outgoing queue."""
-        data = self.recv(self.chunk_size)
-        self.logger.debug('handle_read() -> (%d) "%s"', len(data), data)
-        if len(data) > 0:
-            cmd = self.parser.parse_cmd(data)
-            self.controller.execute_cmd(cmd)
-        
-            #Callback
-            self.data_to_write.insert(0, data)
+        self.data_received = self.recv(self.chunk_size)
+        #self.logger.debug('handle_read() -> (%d) "%s"', len(self.data_received), self.data_received)            
+        #Callback
+        self.data_to_write.insert(0, self.data_received)
     
     def handle_close(self):
-        self.logger.debug('workerhandler closed')
+        #self.logger.debug('workerhandler closed')
         self.close()
+        #work after close this socket
+        self.work()
         
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG,
                         format='%(name)s: %(message)s',
                         )    
 
-    address_server = ('0.0.0.0', 5006)
+    address_server = ('0.0.0.0', 0)
     WorkerNode(address_server) 
     asyncore.loop() 

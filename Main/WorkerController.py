@@ -128,4 +128,4 @@ class WorkerController(object):
                 print "KILL-ing the miner"
                 os.killpg(self.p_miner.pid, signal.SIGTERM)
                 self.p_miner.kill()
-        sleep(1)
+        #sleep(1)
