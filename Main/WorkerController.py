@@ -3,39 +3,31 @@ Created on 25/10/2013
 
 @author: hackturo
 '''
-#from PruebaPopen import PruebaPopen
-from time import sleep
-from multiprocessing import Process
-import os
-import signal
-import subprocess
-import datetime
+import sys
 import time
-import multiprocessing
+import subprocess
+import threading 
+# import datetime
+# import multiprocessing
 
 class WorkerController(object):
     '''
     classdocs
     '''
-    p_monitor = None
-    p_miner = None
     
     def __init__(self):
         '''
         Constructor
         '''
-        self.p = None
+        self.p_miner = None
+        self.t_monitor = None
+        self.is64bits = (sys.maxsize > 2**32)
+        self.platform = sys.platform
+        print "Platform: " + self.platform
+        print "Is 64 bits: " + str(self.is64bits)
         print "Controller created"
-    '''
-    def monitor(self):
-        i = 0
-        while True:        
-            print str(i) +" MH/s"
-            sleep(1)
-            i += 1
-        return
-    '''        
-    
+     
+    ''' 
     def tail(self,f, n, offset=None):
         """Reads a n lines from f with an offset of offset lines.  The return
         value is a tuple in the form ``(lines, has_more)`` where `has_more` is
@@ -57,7 +49,8 @@ class WorkerController(object):
                 return lines[-to_read:offset and -offset or None], \
                        len(lines) > to_read or pos > 0
             avg_line_length *= 1.3
-    
+    '''
+    '''
     def monitor_gpu(self):
         f = open('stats.txt','a')
         sleep(10)
@@ -76,7 +69,8 @@ class WorkerController(object):
                 print last
             sleep(5)
         f.close()
-            
+    '''
+    '''        
     def monitor_cpu(self):
         cpus = multiprocessing.cpu_count()
         last_line = ''
@@ -88,10 +82,10 @@ class WorkerController(object):
                 #print lines
                 #print lines[0][0]+"\n"
                 #print lines[0][len(lines)-1]+"\n"
-                '''first = next(f_log).decode()
-                f_log.seek(-100, 2)
-                lines = f_log.readlines()
-                '''
+#                 first = next(f_log).decode()
+#                 f_log.seek(-100, 2)
+#                 lines = f_log.readlines()
+                
                 if(last_line != lines[0][-1]):#.decode()):
                     last_line = lines[0][-1]#.decode()
                     hashes = 0
@@ -109,23 +103,60 @@ class WorkerController(object):
                     f_stats.write(tim+" "+str(hashes)+" "+hash_rate+"\n")
                     print tim+" "+str(hashes)+" "+hash_rate
             f_stats.close()
-        
+    ''' 
+    def monitor(self): 
+        while self.p_miner.poll() == None:
+            line = self.p_miner.stdout.readline()
+            if line: 
+                print line
+            #monitoring time      
+            time.sleep(3)
+        print "monitor finished"
+    
+    def start_miner(self, id_miner):
+        #we need to use id_miner to obtain miner_cmd from its shell script
+        miner_cmd = [
+                     "/home/hackturo/Software/miners/cpuminer-2.3.2/minerd",
+                     "-a","sha256d",
+                     "-o","stratum+tcp://stratum.bitcoin.cz:3333",
+                     "-O","cloudminer.worker1:9868UyAN"
+                    ]
+        self.p_miner = subprocess.Popen(miner_cmd,shell=False, stdout = subprocess.PIPE)
+        self.t_monitor = threading.Thread(target=self.monitor)  
+        self.t_monitor.start()  
+    
+    def stop_miner(self):
+        if self.p_miner <> None:
+            print "Terminating the miner"
+            if self.p_miner.poll() == None:
+                self.p_miner.terminate()
+            self.t_monitor.join(timeout=10)
+            self.p_miner = None
+            self.t_monitor = None
+            print "Miner terminated"
+                
     def execute_cmd(self, cmd):
         print str(cmd) + " to be executed"
-        if str(cmd[0]) == "start":
+        opcode = str(cmd[0])        
+        
+        if opcode == "start":
+            self.stop_miner()
+            id_miner = str(cmd[1])
+            self.start_miner(id_miner)
             # The os.setsid() is passed in the argument preexec_fn so
             # it's run after the fork() and before  exec() to run the shell.
             #self.p_miner = subprocess.Popen('bfgminer -o http://api2.bitcoin.cz:8332 -u tomresklin.worker1 -p nDBb37wH --real-quiet 2> log.txt', shell=True, preexec_fn=os.setsid)
-            self.p_miner = subprocess.Popen('/usr/bin/minerd -a sha256d -o stratum+tcp://stratum.bitcoin.cz:3333 -O cloudminer.worker1:9868UyAN 2>log.txt', shell=True, preexec_fn=os.setsid)
-            self.p_monitor = Process(target = self.monitor_cpu)
+            #self.p_miner = subprocess.Popen('/usr/bin/minerd -a sha256d -o stratum+tcp://stratum.bitcoin.cz:3333 -O cloudminer.worker1:9868UyAN 2>log.txt', shell=True, preexec_fn=os.setsid)
+            #self.p_monitor = Process(target = self.monitor_cpu)
             #sleep(5)
-            self.p_monitor.start()
-        else:
-            if self.p_monitor <> None:
-                print "TERMINAT-ing the monitor"
-                self.p_monitor.terminate()
-            if self.p_miner <> None:
-                print "KILL-ing the miner"
-                os.killpg(self.p_miner.pid, signal.SIGTERM)
-                self.p_miner.kill()
-        #sleep(1)
+            #self.p_monitor.start()
+        elif opcode == "stop":
+            self.stop_miner()
+#             if self.p_monitor <> None:
+#                 print "TERMINAT-ing the monitor"
+#                 self.p_monitor.terminate()
+            
+                #os.killpg(self.p_miner.pid, signal.SIGTERM)
+                #self.p_miner.kill()
+        else :
+            print "Unknown Command"
