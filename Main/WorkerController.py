@@ -3,8 +3,11 @@ Created on 25/10/2013
 
 @author: hackturo
 '''
+import re
 import sys
 import time
+import datetime
+import pymongo
 import subprocess
 import threading 
 # import datetime
@@ -104,13 +107,33 @@ class WorkerController(object):
                     print tim+" "+str(hashes)+" "+hash_rate
             f_stats.close()
     ''' 
-    def monitor(self): 
+    def insert_data(self ,id_worker ,id_miner ,currency ,hash_rate ,datetime ):
+        db_connection = pymongo.Connection("localhost", 27017)
+        cloudminerDB = db_connection.cloudminerDB
+        col_status = cloudminerDB['col_status']
+        status = {
+                  "id_worker" : id_worker,
+                  "id_miner"  : id_miner,
+                  "currency"  : currency,
+                  "hash_rate" : hash_rate,
+                  "datetime"  : datetime
+                 }
+        col_status.insert(status)
+        print "Item inserted!!!"
+        
+    def monitor(self):  
         while self.p_miner.poll() == None:
             line = self.p_miner.stdout.readline()
             if line: 
                 print line
+#                 id_worker = 1
+#                 id_miner = 1
+#                 currency = "BTC"
+#                 hash_rate = 5.1549
+#                 datetime = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
+#                 self.insert_data(id_worker ,id_miner ,currency ,hash_rate ,datetime)
             #monitoring time      
-            time.sleep(3)
+            #time.sleep(3)
         print "monitor finished"
     
     def start_miner(self, id_miner):
@@ -121,7 +144,7 @@ class WorkerController(object):
                      "-o","stratum+tcp://stratum.bitcoin.cz:3333",
                      "-O","cloudminer.worker1:9868UyAN"
                     ]
-        self.p_miner = subprocess.Popen(miner_cmd,shell=False, stdout = subprocess.PIPE)
+        self.p_miner = subprocess.Popen(miner_cmd,shell=False, stdout = subprocess.PIPE, stderr = subprocess.STDOUT)
         self.t_monitor = threading.Thread(target=self.monitor)  
         self.t_monitor.start()  
     
