@@ -22,12 +22,12 @@ if __name__ == '__main__':
                         format='%(name)s: %(message)s',
                         )    
 
-    address_client = ('127.0.0.1', 59551)
+    address_client = ('127.0.0.1', 49011)
     task_process(address_client, "start BTC")
     print "==============COMANDO 1 TERMINADO==================="
-    sleep(30)
+    sleep(60)
     task_process(address_client, "start BTC")
     print "==============COMANDO 2 TERMINADO==================="
-    sleep(30)
+    sleep(60)
     task_process(address_client, "stop")
-    print "==============COMANDO 2 TERMINADO==================="
+    print "==============COMANDO 3 TERMINADO==================="
