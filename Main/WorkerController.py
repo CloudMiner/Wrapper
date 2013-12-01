@@ -88,7 +88,7 @@ class WorkerController(object):
                     num_lines += 1
                     num_lines %= 4
                     if num_lines == 0:
-                        #self.insert_data(hash_rate)
+                        self.insert_data(hash_rate)
                         print str(hash_rate)
                         hash_rate = 0  # reset hash count
                 else:
