@@ -145,6 +145,7 @@ class WorkerController(object):
         elif opcode == 'stop':
             self.stop_miner()
         elif opcode == 'quit':
+            self.stop_miner()
             self.quit_server()
         else:
             print 'Unknown Command'
