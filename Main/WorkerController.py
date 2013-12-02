@@ -65,6 +65,7 @@ class WorkerController(object):
             'currency': self.currency,
             'hash_rate': hash_rate,
             'datetime' : timestamp,
+            'datetime2' : ts,
             }
 
             # "datetime"  : datetime HAY QUE CALCULAR DATETIME
@@ -116,7 +117,8 @@ class WorkerController(object):
             '--benchmark'
             ]
         #self.p_miner = subprocess.Popen(miner_cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        self.p_miner = subprocess.Popen('../Lanzadores/start_m01_BTC_slush_worker1.sh', shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        #self.p_miner = subprocess.Popen('../Lanzadores/start_minerd_BTC_slush_worker1.sh', shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        self.p_miner = subprocess.Popen('../Lanzadores/start_minerd_BTC_benchmark.sh', shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         self.t_monitor = threading.Thread(target=self.monitor)
         self.t_monitor.start()
 

@@ -10,6 +10,7 @@ Created on 14/11/2013
 import re
 import logging
 import asyncore
+import pymongo
 
 from time import sleep
 from TaskMaster import TaskMaster
@@ -23,6 +24,18 @@ def send_task(addr, task):
     asyncore.loop()
     print 'CALLBACK:' + connector.get_callback()
 
+
+def retrieve_data(worker_id):
+    db_connection = pymongo.Connection('localhost', 27017)
+    cloudminerDB = db_connection.cloudminerDB
+    col_status = cloudminerDB['col_status']    
+    cols = col_status.find({"id_worker":worker_id},{'datetime':1,'datetime2':1,'hash_rate':1,'_id':0}).sort("datetime2",-1)
+    col = next(cols, None)
+    if col:
+        print "last online: "+col['datetime']#+"\n"
+        print "hashing rate: "+str(col['hash_rate'])+" MH/s"
+    else:
+        print "No data for selected worker" 
 
 def gen_separator():
     return 33 * '-'
@@ -129,7 +142,9 @@ if __name__ == '__main__':
                     go_back = ask_command(address) == 'Back'
         elif choice == 2:
             print 'You chose \'View worker status\''
-            print 'Not available now... (sorry)'
+            worker = choice = raw_input('Enter worker\'s id: ')
+            retrieve_data(worker)
+            #print 'Not available now... (sorry)'
         elif choice == 3:
 
             is_exit = True
