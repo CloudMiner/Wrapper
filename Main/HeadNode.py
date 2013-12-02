@@ -67,13 +67,29 @@ def ask_address():
         port = int(addr[1])
     return (ip, port)
 
+def ask_miner():
+    miner_menu = ['minerd (cpuminer)', 'bfgminer', 'Back']
+    choice = query_input('CHOOSE A MINER', miner_menu)
+    if choice == 1:
+        return 'm01'
+    elif choice == 2:
+        return 'm02'
+    elif choice == 3:
+        return 'Back'
+    else:
+        print '[ERR] Invalid miner...'
 
 def ask_command(address):
     cmd = ''
-    cmd_menu = ['Start', 'Stop', 'Quit', 'Back']
+    cmd_menu = ['Start worker', 'Stop worker', 'Terminate worker', 'Back']
     choice = query_input('CHOOSE A COMMAND', cmd_menu)
     if choice == 1:
-        cmd = 'start BTC'
+        miner = ask_miner()
+        if miner==None or miner=='Back':
+            return None
+        else:
+            cmd = 'start '+miner
+        #cmd = 'start BTC'
     elif choice == 2:
         cmd = 'stop'
     elif choice == 3:
@@ -105,16 +121,14 @@ if __name__ == '__main__':
         # Main Menu options
 
         if choice == 1:
-            print 'You choose Send command'
+            print 'You chose \'Send command\''
             address = ask_address()
             if address != (None, None):
                 go_back = False
                 while not go_back:
                     go_back = ask_command(address) == 'Back'
-
         elif choice == 2:
-
-            print 'You chooose View worker status'
+            print 'You chose \'View worker status\''
             print 'Not available now... (sorry)'
         elif choice == 3:
 

@@ -9,8 +9,8 @@ Created on 25/10/2013
 
 import re
 import sys
-# import time
-# import datetime
+import time
+import datetime
 
 import pymongo
 import subprocess
@@ -57,11 +57,14 @@ class WorkerController(object):
         db_connection = pymongo.Connection('localhost', 27017)
         cloudminerDB = db_connection.cloudminerDB
         col_status = cloudminerDB['col_status']
+        ts = time.time()
+        timestamp = datetime.datetime.fromtimestamp(ts).strftime('%d-%m-%Y %H:%M:%S')
         status = {
             'id_worker': self.id_worker,
             'id_miner': self.id_miner,
             'currency': self.currency,
             'hash_rate': hash_rate,
+            'datetime' : timestamp,
             }
 
             # "datetime"  : datetime HAY QUE CALCULAR DATETIME
@@ -112,8 +115,8 @@ class WorkerController(object):
             '/home/hackturo/Software/miners/cpuminer-2.3.2/minerd',
             '--benchmark'
             ]
-        self.p_miner = subprocess.Popen(miner_cmd, shell=False,
-                stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        #self.p_miner = subprocess.Popen(miner_cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        self.p_miner = subprocess.Popen('../Lanzadores/start_m01_BTC_slush_worker1.sh', shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         self.t_monitor = threading.Thread(target=self.monitor)
         self.t_monitor.start()
 
