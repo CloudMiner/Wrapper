@@ -50,7 +50,7 @@ def query_input(menu_title, options):
         try:
             choice = int(raw_input('Enter your choice [1-' + str(n)
                          + '] : '))
-            is_valid = True
+            is_valid = (choice >= 1 and choice <= n)
         except ValueError, e:
             print "'%s' is not a valid integer." % e.args[0].split(': '
                     )[1]
@@ -70,13 +70,15 @@ def ask_address():
 
 def ask_command(address):
     cmd = ''
-    cmd_menu = ['Start', 'Stop', 'Back']
+    cmd_menu = ['Start', 'Stop', 'Quit', 'Back']
     choice = query_input('CHOOSE A COMMAND', cmd_menu)
     if choice == 1:
         cmd = 'start BTC'
     elif choice == 2:
         cmd = 'stop'
     elif choice == 3:
+        cmd = 'quit'
+    elif choice == 4:
         return 'Back'
     else:
         print '[ERR] Invalid command...'
@@ -109,6 +111,7 @@ if __name__ == '__main__':
                 go_back = False
                 while not go_back:
                     go_back = ask_command(address) == 'Back'
+
         elif choice == 2:
 
             print 'You chooose View worker status'

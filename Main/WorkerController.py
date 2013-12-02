@@ -23,25 +23,20 @@ class WorkerController(object):
     classdocs
     '''
 
-    def __init__(self):
+    def __init__(self, invoker):
         '''
         Constructor
         '''
+        self.invoker   = invoker
+        self.id_worker = invoker.id_worker
+        self.id_miner  = None
+        self.currency  = None
+        self.is64bits  = sys.maxsize > 2 ** 32
+        self.platform  = sys.platform
+        self.p_miner   = None     # Miner Process
+        self.t_monitor = None   # Monitor Thread
 
-        self.id_worker = 1
-        self.id_miner = None
-        self.currency = None
-        self.is64bits = sys.maxsize > 2 ** 32
-        self.platform = sys.platform
-
-        # Miner Process
-
-        self.p_miner = None
-
-        # Monitor Thread
-
-        self.t_monitor = None
-
+        print 'Worker: ' + self.id_worker
         print 'Platform: ' + self.platform
         print 'Is 64 bits: ' + str(self.is64bits)
         print 'Controller created'
@@ -103,14 +98,19 @@ class WorkerController(object):
 
         # we need to use id_miner to obtain miner_cmd from its shell script
 
+        # miner_cmd = [
+        #     '/home/hackturo/Software/miners/cpuminer-2.3.2/minerd',
+        #     '-a',
+        #     'sha256d',
+        #     '-o',
+        #     'stratum+tcp://stratum.bitcoin.cz:3333',
+        #     '-O',
+        #     'cloudminer.worker1:9868UyAN',
+        #     ]
+
         miner_cmd = [
             '/home/hackturo/Software/miners/cpuminer-2.3.2/minerd',
-            '-a',
-            'sha256d',
-            '-o',
-            'stratum+tcp://stratum.bitcoin.cz:3333',
-            '-O',
-            'cloudminer.worker1:9868UyAN',
+            '--benchmark'
             ]
         self.p_miner = subprocess.Popen(miner_cmd, shell=False,
                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -130,6 +130,9 @@ class WorkerController(object):
 
             print 'Miner terminated'
 
+    def quit_server(self):
+        self.invoker.handle_close()
+
     def execute_cmd(self, cmd):
         print str(cmd) + ' to be executed'
         opcode = str(cmd[0])
@@ -141,5 +144,7 @@ class WorkerController(object):
             self.start_miner()
         elif opcode == 'stop':
             self.stop_miner()
+        elif opcode == 'quit':
+            self.quit_server()
         else:
             print 'Unknown Command'

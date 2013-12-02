@@ -25,6 +25,8 @@ class WorkerParser(object):
         elif len(l1) == 1:
             if l1[0].lower() == "stop":
                 print "stop mining!"
+            elif l1[0].lower() == "quit":
+                print "Quit WorkerNode!"
             elif l1[0].lower() == "start":
                 print "ERR, crypto-currency parameter missing..."
             else:
