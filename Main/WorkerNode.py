@@ -94,18 +94,11 @@ class WorkerHandler(asyncore.dispatcher):
 
     def work(self):
         data = self.data_received
-<<<<<<< HEAD
         print "We have received the following command: " + data
         self.controller.execute_cmd(data.split())
         #if len(data) > 0:
         #    cmd = self.parser.parse_cmd(data)
         #    self.controller.execute_cmd(cmd)
-=======
-        print 'Hemos recibido el siguiente comando: ' + data
-        if len(data) > 0:
-            cmd = self.parser.parse_cmd(data)
-            self.controller.execute_cmd(cmd)
->>>>>>> branch 'master' of https://github.com/CloudMiner/Wrapper.git
 
     def writable(self):
         """We want to write if we have received data."""
