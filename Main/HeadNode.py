@@ -29,13 +29,15 @@ def retrieve_data(worker_id):
     db_connection = pymongo.Connection('localhost', 27017)
     cloudminerDB = db_connection.cloudminerDB
     col_status = cloudminerDB['col_status']    
-    cols = col_status.find({"id_worker":worker_id},{'datetime':1,'datetime2':1,'hash_rate':1,'_id':0}).sort("datetime2",-1)
+    #cols = col_status.find({"id_worker":worker_id},{'datetime':1,'datetime2':1,'hash_rate':1,'_id':0}).sort("datetime2",-1)
+    cols = col_status.find({"id_worker":worker_id}).sort("datetime2",-1)
     col = next(cols, None)
     if col:
-        print "last online: "+col['datetime']#+"\n"
-        print "hashing rate: "+str(col['hash_rate'])+" MH/s"
+        print "last online ("+col['id_miner']+"): "+col['datetime']#+"\n"
+        print "hashing rate ("+col['id_miner']+"): "+str(col['hash_rate'])+" MH/s"
     else:
         print "No data for selected worker" 
+
 
 def gen_separator():
     return 33 * '-'
@@ -80,34 +82,38 @@ def ask_address():
         port = int(addr[1])
     return (ip, port)
 
+
 def ask_miner():
-    miner_menu = ['minerd (cpuminer)', 'bfgminer', 'Back']
+    miner_menu = ['minerd (cpuminer)', 'bfgminer (GPU)', 'Back']
     choice = query_input('CHOOSE A MINER', miner_menu)
     if choice == 1:
-        return 'm01'
+        return 'm_cpu'
     elif choice == 2:
-        return 'm02'
+        return 'm_gpu'
     elif choice == 3:
         return 'Back'
     else:
         print '[ERR] Invalid miner...'
 
+
 def ask_command(address):
     cmd = ''
-    cmd_menu = ['Start worker', 'Stop worker', 'Terminate worker', 'Back']
+    cmd_menu = ['Start miner', 'Stop miner', 'Test miner', 'Terminate worker', 'Back']
     choice = query_input('CHOOSE A COMMAND', cmd_menu)
-    if choice == 1:
+    if choice == 1 or choice == 2 or choice == 3:
         miner = ask_miner()
         if miner==None or miner=='Back':
-            return None
-        else:
-            cmd = 'start '+miner
+            return None   
+    if choice == 1:
+        cmd = 'start '+miner
         #cmd = 'start BTC'
     elif choice == 2:
-        cmd = 'stop'
+        cmd = 'stop ' +miner
     elif choice == 3:
-        cmd = 'quit'
+        cmd = 'test ' + miner
     elif choice == 4:
+        cmd = 'quit'
+    elif choice == 5:
         return 'Back'
     else:
         print '[ERR] Invalid command...'
@@ -137,20 +143,21 @@ if __name__ == '__main__':
             print 'You chose \'Send command\''
             address = ask_address()
             if address != (None, None):
+                #Probe destinatary to check if it is alive
                 go_back = False
                 while not go_back:
                     go_back = ask_command(address) == 'Back'
         elif choice == 2:
             print 'You chose \'View worker status\''
-            worker = choice = raw_input('Enter worker\'s id: ')
-            retrieve_data(worker)
+            #worker = choice = raw_input('Enter worker\'s id: ')
+            #retrieve_data(worker)
+            retrieve_data('WORKER1')
+            
             #print 'Not available now... (sorry)'
         elif choice == 3:
-
             is_exit = True
             print 'Exiting...'
         else:
-
             print '[ERR] Invalid input number. Try again...'
 
     print 'bye.'
