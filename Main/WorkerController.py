@@ -190,7 +190,15 @@ class WorkerController(object):
 
     def test_miner(self, miner_id):
         if miner_id=='m_cpu':
-            self.p_miner_cpu = subprocess.Popen('../Lanzadores/start_minerd_BTC_benchmark.sh', shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            miner_cmd = [
+            #    '/home/hackturo/Software/miners/cpuminer-2.3.2/minerd',
+                '../Miners/minerd',
+                '-a',
+                'sha256d',
+                '--benchmark'
+                ]
+            self.p_miner_cpu = subprocess.Popen(miner_cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            #self.p_miner_cpu = subprocess.Popen('../Lanzadores/start_minerd_BTC_benchmark.sh', shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             self.t_monitor_cpu = threading.Thread(target=self.monitor_minerd)
             self.t_monitor_cpu.start()
             sleep(5)
@@ -200,7 +208,13 @@ class WorkerController(object):
             else:
                 print 'minerD-cpuminer not runnable (check miner\'s help for more information)'
         elif miner_id=='m_gpu':
-            self.p_miner_gpu = subprocess.Popen('../Lanzadores/start_bfgminer_BTC_benchmark.sh', shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            miner_cmd = [
+                'bfgminer',
+                '--real-quiet',
+                '--benchmark'
+                ]
+            self.p_miner_gpu = subprocess.Popen(miner_cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            #self.p_miner_gpu = subprocess.Popen('../Lanzadores/start_bfgminer_BTC_benchmark.sh', shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             self.t_monitor_gpu = threading.Thread(target=self.monitor_bfgminer)
             self.t_monitor_gpu.start()
             sleep(5)
