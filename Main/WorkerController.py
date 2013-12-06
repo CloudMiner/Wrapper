@@ -32,15 +32,30 @@ class WorkerController(object):
         self.id_worker = invoker.id_worker
         self.is64bits  = sys.maxsize > 2 ** 32
         self.platform  = sys.platform
-        self.id_miner  = None
-        self.currency_cpu  = None
-        self.currency_gpu  = None
-        self.p_miner_cpu   = None     # Miner Process on CPU
-        self.p_miner_gpu   = None     # Miner Process on GPU
-        self.t_monitor_cpu = None   # Monitor Thread
-        self.t_monitor_gpu = None   # Monitor Thread
-        self.miner_cpu_ok = None
-        self.miner_gpu_ok = None
+        
+        self.actual_miner_vars = {} # empty two-level dictionary
+        
+        #self.id_miner  = None
+        #self.currency_cpu  = None
+        #self.currency_gpu  = None
+        #self.p_miner_cpu   = None     # Miner Process on CPU
+        #self.p_miner_gpu   = None     # Miner Process on GPU
+        #self.t_monitor_cpu = None   # Monitor Thread
+        #self.t_monitor_gpu = None   # Monitor Thread
+        #self.miner_cpu_ok = None
+        #self.miner_gpu_ok = None
+        self.miner_cmds = {}
+        self.miner_cmds['m_cpu'] = [
+                '../Miners/minerd',
+                '-a',
+                'sha256d',
+                '--benchmark'
+                ]
+        self.miner_cmds['m_gpu'] = [
+                'bfgminer',
+                '--benchmark',
+                '--real-quiet'
+                ]
 
         print 'Worker: ' + self.id_worker
         print 'Platform: ' + self.platform
@@ -60,11 +75,7 @@ class WorkerController(object):
         return mh
 
     def insert_data(self, hash_rate, miner_id):
-        if miner_id=='m_cpu':
-            currency = self.currency_cpu
-        elif miner_id=='m_gpu':
-            currency = self.currency_gpu
-        
+        currency = self.actual_miner_vars[miner_id]['currency']
         db_connection = pymongo.Connection('localhost', 27017)
         cloudminerDB = db_connection.cloudminerDB
         col_status = cloudminerDB['col_status']
@@ -72,9 +83,7 @@ class WorkerController(object):
         timestamp = datetime.datetime.fromtimestamp(ts).strftime('%d-%m-%Y %H:%M:%S')
         status = {
             'id_worker': self.id_worker,
-            #'id_miner': self.id_miner,
             'id_miner': miner_id,
-            #'currency': self.currency,
             'currency': currency,
             'hash_rate': hash_rate,
             'datetime' : timestamp,
@@ -87,14 +96,13 @@ class WorkerController(object):
     def monitor_minerd(self):
         num_lines = 0
         hash_rate = 0  # MH/s
-        while self.p_miner_cpu.poll() == None:
-            line = self.p_miner_cpu.stdout.readline()
-
+        while self.actual_miner_vars['m_cpu']['p_miner'].poll() == None:
+            line = self.actual_miner_vars['m_cpu']['p_miner'].stdout.readline()
             if line:
                 line_hashes = self.parse_hashes(line)
                 
                 if line_hashes:
-                    self.miner_cpu_ok = True
+                    self.actual_miner_vars['m_cpu']['works_ok'] = True
                     hash_rate += line_hashes
                     num_lines += 1
                     num_lines %= 4
@@ -103,8 +111,8 @@ class WorkerController(object):
                         print str(hash_rate)
                         hash_rate = 0  # reset hash count
                 else:
-                    if self.miner_cpu_ok == None and re.search(r'Try', line):
-                        self.miner_cpu_ok = False
+                    if self.actual_miner_vars['m_cpu']['works_ok'] == None and re.search(r'Try', line):
+                        self.actual_miner_vars['m_cpu']['works_ok'] = False
                     print line
 
             # monitoring time
@@ -113,19 +121,20 @@ class WorkerController(object):
         print 'monitor_minerd finished'
 
     def monitor_bfgminer(self):
-        while self.p_miner_gpu.poll() == None:
-            line = self.p_miner_gpu.stdout.readline()
+        while self.actual_miner_vars['m_gpu']['p_miner'].poll() == None:
+            line = self.actual_miner_vars['m_gpu']['p_miner'].stdout.readline()
             if line:
                 hash_rate = self.parse_hashes(line)
                 if hash_rate:
-                    self.miner_gpu_ok = True
+                    self.actual_miner_vars['m_gpu']['works_ok'] = True
                     self.insert_data(hash_rate,'m_gpu')
                     print str(hash_rate)
                 else:
-                    if self.miner_gpu_ok == None and re.search(r'No device', line):
-                        self.miner_gpu_ok = False
+                    if self.actual_miner_vars['m_gpu']['works_ok'] == None and re.search(r'No device', line):
+                        self.actual_miner_vars['m_gpu']['works_ok'] = False
                     print line    
         print 'monitor_bfgminer finished'
+
     
     def start_miner(self, miner_id):
 
@@ -141,111 +150,89 @@ class WorkerController(object):
         #     'cloudminer.worker1:9868UyAN',
         #     ]
 
-        if miner_id=='m_cpu':
-            miner_cmd = [
-            #    '/home/hackturo/Software/miners/cpuminer-2.3.2/minerd',
-                '../Miners/minerd',
-                '-a',
-                'sha256d',
-                '--benchmark'
-                ]
-            self.p_miner_cpu = subprocess.Popen(miner_cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            #self.p_miner_cpu = subprocess.Popen('../Lanzadores/start_minerd_BTC_benchmark.sh', shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            self.t_monitor_cpu = threading.Thread(target=self.monitor_minerd)
-            self.t_monitor_cpu.start()
-        elif miner_id=='m_gpu':
-            miner_cmd = [
-                'bfgminer',
-                '--real-quiet',
-                '--benchmark'
-                ]
-            self.p_miner_gpu = subprocess.Popen(miner_cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            #self.p_miner_gpu = subprocess.Popen('../Lanzadores/start_bfgminer_BTC_benchmark.sh', shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            self.t_monitor_gpu = threading.Thread(target=self.monitor_bfgminer)
-            self.t_monitor_gpu.start()
+        if not self.miner_cmds.has_key(miner_id):
+            print 'unknown miner \"' + miner_id + '\", unable to start it'
+            return
+        self.actual_miner_vars[miner_id]['p_miner'] = subprocess.Popen(self.miner_cmds[miner_id], shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        self.actual_miner_vars[miner_id]['t_monitor'] = threading.Thread(target=self.monitor_minerd)
+        self.actual_miner_vars[miner_id]['t_monitor'].start()
 
-    def stop_miner(self, miner_id):
-        if miner_id=='m_cpu':
-            if self.p_miner_cpu != None:
-                print 'Terminating the miner on cpu'
-    
-                if self.p_miner_cpu.poll() == None:
-                    self.p_miner_cpu.terminate()
-    
-                self.t_monitor_cpu.join(timeout=10)
-                self.p_miner_cpu = None
-                self.t_monitor_cpu = None
-                print 'CPU miner terminated'
-        elif miner_id=='m_gpu':
-            if self.p_miner_gpu != None:
-                print 'Terminating the miner on gpu'
-    
-                if self.p_miner_gpu.poll() == None:
-                    self.p_miner_gpu.terminate()
-    
-                self.t_monitor_gpu.join(timeout=10)
-                self.p_miner_gpu = None
-                self.t_monitor_gpu = None
-                print 'GPU miner terminated'
 
     def test_miner(self, miner_id):
+        if not self.miner_cmds.has_key(miner_id):
+            print 'unknown miner \"' + miner_id + '\", unable to start it'
+            return
         if miner_id=='m_cpu':
-            miner_cmd = [
-            #    '/home/hackturo/Software/miners/cpuminer-2.3.2/minerd',
-                '../Miners/minerd',
-                '-a',
-                'sha256d',
-                '--benchmark'
-                ]
-            self.p_miner_cpu = subprocess.Popen(miner_cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            #self.p_miner_cpu = subprocess.Popen('../Lanzadores/start_minerd_BTC_benchmark.sh', shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            self.t_monitor_cpu = threading.Thread(target=self.monitor_minerd)
-            self.t_monitor_cpu.start()
-            sleep(5)
-            self.stop_miner(miner_id)
-            if self.miner_cpu_ok:
-                print 'minerD-cpuminer working OK!'
-            else:
-                print 'minerD-cpuminer not runnable (check miner\'s help for more information)'
+            self.actual_miner_vars[miner_id]['t_monitor'] = threading.Thread(target=self.monitor_minerd)
         elif miner_id=='m_gpu':
-            miner_cmd = [
-                'bfgminer',
-                '--real-quiet',
-                '--benchmark'
-                ]
-            self.p_miner_gpu = subprocess.Popen(miner_cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            #self.p_miner_gpu = subprocess.Popen('../Lanzadores/start_bfgminer_BTC_benchmark.sh', shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            self.t_monitor_gpu = threading.Thread(target=self.monitor_bfgminer)
-            self.t_monitor_gpu.start()
-            sleep(5)
+            self.actual_miner_vars[miner_id]['t_monitor'] = threading.Thread(target=self.monitor_bfgminer)
+        self.actual_miner_vars[miner_id]['p_miner'] = subprocess.Popen(self.miner_cmds[miner_id], shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        self.actual_miner_vars[miner_id]['t_monitor'].start()
+        sleep(5)
+        self.stop_miner(miner_id)
+        if self.actual_miner_vars[miner_id]['works_ok']:
+            print '\"' +miner_id+ '\" working OK!'
+        else:
+            print '\"' +miner_id+ '\" not runnable (check miner\'s help for more information)'
+        self.delete_miner(miner_id)
+
+    
+    def delete_miner(self, miner_id):
+        if self.actual_miner_vars.has_key(miner_id):
+            del self.actual_miner_vars[miner_id]
+
+
+    def delete_all_miners(self):
+        for miner_id in self.actual_miner_vars:
+            self.actual_miner_vars[miner_id].clear()
+        self.actual_miner_vars.clear()
+    
+    
+    def stop_miner(self, miner_id):
+        if not self.actual_miner_vars.has_key(miner_id):
+            print 'unknown miner \"' + miner_id + '\", unable to stop it'
+            return
+        if self.actual_miner_vars[miner_id]['p_miner'] != None:
+            print 'Terminating the miner \''+ str(miner_id) + '\''
+            if self.actual_miner_vars[miner_id]['p_miner'].poll() == None:
+                self.actual_miner_vars[miner_id]['p_miner'].terminate()
+            self.actual_miner_vars[miner_id]['t_monitor'].join(timeout=10)
+            self.actual_miner_vars[miner_id]['p_miner'] = None
+            self.actual_miner_vars[miner_id]['t_monitor'] = None
+            print '\''+ str(miner_id) + '\' terminated'
+            #self.delete_miner(miner_id)
+        
+    
+    def stop_all_miners(self):
+        for miner_id in self.actual_miner_vars:
             self.stop_miner(miner_id)
-            if self.miner_gpu_ok:
-                print 'bfgminer working OK!'
-            else:
-                print 'bfgminer not runnable (probably GPU not usable for mining, check miner\'s help for more information)'
+
     
     def quit_server(self):
         self.invoker.handle_close()
 
+
     def execute_cmd(self, cmd):
         print str(cmd) + ' to be executed'
         opcode = str(cmd[0])
-        if opcode == 'start' or opcode == 'test' or opcode == 'stop':
-            #self.id_miner = str(cmd[1])
-            self.currency_cpu = 'BTC'
-            self.stop_miner(str(cmd[1]))
+        if opcode == 'start' or opcode == 'test': #or opcode == 'stop':
+            miner_id = str(cmd[1])
+            self.actual_miner_vars[miner_id] = {'works_ok': None,
+                                                'currency':'BTC',
+                                                'p_miner':None,
+                                                't_monitor':None}
+            self.stop_miner(miner_id)
         if opcode == 'start':
-            #self.id_miner = str(cmd[1])
-            #self.currency_cpu = 'BTC'
-            self.start_miner(str(cmd[1]))
+            self.start_miner(miner_id)
         elif opcode == 'test':
-            self.test_miner(str(cmd[1]))
+            self.test_miner(miner_id)
         elif opcode == 'stop':
-            pass
-        #    self.stop_miner()
+            miner_id = str(cmd[1])
+            self.stop_miner(miner_id)
+            self.delete_miner(miner_id)            
         elif opcode == 'quit':
-            self.stop_miner('m_cpu')
-            self.stop_miner('m_gpu')
+            self.stop_all_miners()
+            self.delete_all_miners()
             self.quit_server()
         else:
             print 'Unknown Command'
