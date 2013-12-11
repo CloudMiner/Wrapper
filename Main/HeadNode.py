@@ -11,6 +11,7 @@ import re
 import logging
 import asyncore
 import pymongo
+import random
 
 from time import sleep
 from TaskMaster import TaskMaster
@@ -57,7 +58,10 @@ def query_input(menu_title, options):
     n = len(options)
     choice = None
     is_valid = False
+    first_time = True
     while not is_valid:
+        if not first_time:
+            print '[ERR] Invalid option...'
         print gen_separator()
         print menu_title
         print gen_options(options)
@@ -69,6 +73,7 @@ def query_input(menu_title, options):
         except ValueError, e:
             print "'%s' is not a valid integer." % e.args[0].split(': '
                     )[1]
+        first_time = False
     return choice
 
 
@@ -121,13 +126,82 @@ def ask_command(address):
 
     send_task(address, cmd)
 
+def ask_connection(address_list,ask_new):
+    connection_menu = []
+    if(ask_new):
+        connection_menu.append('New connection...')
+    for con in address_list:
+        connection_menu.append(con['worker_id']+' -> '+con['IP']+':'+str(con['port']))
+    connection_menu.append('Back')
+    choice = query_input('CHOOSE A CONNECTION', connection_menu)
+    if choice == 1: # 'New connection option
+        return 0
+    elif choice <= len(address_list)+1: # valid connections option
+        return choice-1
+    elif choice == len(address_list)+2: # 'Back' option
+        return -1
+    else:
+        print '[ERR] Invalid option...'
+        return None
+
+def ask_IP():
+    ip = raw_input('Enter IPv4 [X.X.X.X] address:\n')
+    if re.match('(\d{1,3}\.){3}\d{1,3}', ip):
+        return ip
+    else:
+        print '[ERR] wrong format'
+        return None
+
+def ask_port():
+    try:
+        port = int(raw_input('Enter port (1-99999):\n'))
+        if port>=1 and port<=99999:
+            return port
+        else:
+            print '[ERR] number out of valid interval'
+            return None
+    except ValueError:
+        print '[ERR] not a number'
+        return None
+    
+
+def config_connection(connection_number, address_list):
+    config_menu = ['Change IP', 'Change port', 'Close connection', 'Back']
+    choice = query_input('CHOOSE AN ACTION', config_menu)
+    if choice == 1:
+        ip = ask_IP()
+        while ip == None:
+            ip = ask_IP()
+        address_list[connection_number-1]['IP'] = ip
+    elif choice == 2:
+        port = ask_port()
+        while port == None:
+            port = ask_port()
+        address_list[connection_number-1]['port'] = port
+    elif choice == 3:
+        address_list.pop(connection_number-1)
+    elif choice == 4:
+        #return 'Back'
+        pass
+    else:
+        print '[ERR] Invalid command...'
+        return None
 
 if __name__ == '__main__':
+    worker_configured = False
+    address_list = [{'worker_id':'WORKER1',
+                     'IP':'127.0.0.1',
+                     'port':0}]
+    
     logging.basicConfig(level=logging.DEBUG,
                         format='%(name)s: %(message)s')
     header = '  - C L O U D M I N E R -  '
-    subtitle = '    Head Node v0.1 alpha    '
-    main_menu = ['Send command', 'View status', 'Exit']
+    subtitle = '    Head Node v0.2 alpha    '
+    #main_menu = ['Send command', 'View status', 'Exit']
+    #if worker_configured:
+    main_menu = ['Connections setup', 'Send command', 'View worker status', 'Exit']
+    #else:
+    #    main_menu = ['Connection setup', 'Exit']
 
     print gen_separator()
     print header
@@ -140,21 +214,45 @@ if __name__ == '__main__':
         # Main Menu options
 
         if choice == 1:
-            print 'You chose \'Send command\''
-            address = ask_address()
-            if address != (None, None):
-                #Probe destinatary to check if it is alive
-                go_back = False
-                while not go_back:
-                    go_back = ask_command(address) == 'Back'
+            #print 'You chose \'Connections setup\''
+            print 'You chose \"'+ main_menu[0] +'\"'
+            connection_number = ask_connection(address_list,True)
+            if connection_number != None:
+                if connection_number == 0:
+                    address = ask_address()
+                    while address == (None,None):
+                        print '[ERR] wrong format'
+                        address = ask_address()
+                    print address
+                    address_list.append({'worker_id':'WORKER'+str(random.randint(1,10)),
+                                         'IP':address[0],
+                                         'port':address[1]})
+                elif connection_number != -1:
+                    print connection_number
+                    config_connection(connection_number, address_list)
         elif choice == 2:
-            print 'You chose \'View worker status\''
+            #print 'You chose \'Send command\''
+            print 'You chose \"'+ main_menu[1] +'\"'
+            #address = ask_address()
+            #if address != (None, None):
+            if(len(address_list)>0):
+                connection_number = ask_connection(address_list,False)
+                if connection_number != None and connection_number != -1: 
+                    address = (address_list[connection_number-1]['IP'],address_list[connection_number-1]['port'])
+                    print address
+                    #Probe destinatary to check if it is alive
+                    go_back = False
+                    while not go_back:
+                        go_back = ask_command(address) == 'Back'
+            else:
+                print 'No connections configured...'
+        elif choice == 3:
+            #print 'You chose \'View worker status\''
+            print 'You chose \"'+ main_menu[2] +'\"'
             #worker = choice = raw_input('Enter worker\'s id: ')
             #retrieve_data(worker)
             retrieve_data('WORKER1')
-            
-            #print 'Not available now... (sorry)'
-        elif choice == 3:
+        elif choice == 4:
             is_exit = True
             print 'Exiting...'
         else:
