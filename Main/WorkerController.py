@@ -29,9 +29,17 @@ class WorkerController(object):
         Constructor
         '''
         self.invoker   = invoker
+        self.address   = invoker.address
         self.id_worker = invoker.id_worker
         self.is64bits  = sys.maxsize > 2 ** 32
-        self.platform  = sys.platform
+        plat = sys.platform
+        if(plat.find('windows')):
+            self.platform  = 'windows'
+        elif(plat.find('linux')):
+            self.platform  = 'linux'
+        else:
+            self.platform  = plat
+        #self.platform  = sys.platform
         
         self.actual_miner_vars = {} # empty two-level dictionary
         
@@ -61,6 +69,7 @@ class WorkerController(object):
         print 'Platform: ' + self.platform
         print 'Is 64 bits: ' + str(self.is64bits)
         print 'Controller created'
+        self.ddbb_insert_worker()
 
     def parse_hashes(self, line):
         s = line.split()
@@ -74,23 +83,64 @@ class WorkerController(object):
             print 'MH--->' + str(mh)
         return mh
 
-    def insert_data(self, hash_rate, miner_id):
-        currency = self.actual_miner_vars[miner_id]['currency']
+
+    def ddbb_insert_worker(self):
         db_connection = pymongo.Connection('localhost', 27017)
         cloudminerDB = db_connection.cloudminerDB
-        col_status = cloudminerDB['col_status']
+        #col_status = cloudminerDB['col_status']
+        col_active_workers = cloudminerDB['col_active_workers']
+        ts = time.time()
+        timestamp = datetime.datetime.fromtimestamp(ts).strftime('%d-%m-%Y %H:%M:%S')
+        if(self.is64bits):
+            architecture = '64 bits'
+        else:
+            architecture = '32 bits'
+        worker = {
+            'id_worker'   : self.id_worker,
+            'platform'    : self.platform,
+            'architecture': architecture,
+            'start_time'  : timestamp,
+            'start_time2' : ts,
+            #'IP'         : '127.0.0.1'
+            'IP'          : self.address[0],
+            'port'        : self.address[1],
+            }
+
+        col_active_workers.insert(worker)
+        print 'Item inserted!!!'
+
+
+    def ddbb_remove_worker(self):
+        db_connection = pymongo.Connection('localhost', 27017)
+        cloudminerDB = db_connection.cloudminerDB
+        #col_status = cloudminerDB['col_status']
+        col_active_workers = cloudminerDB['col_active_workers']
+        worker = {
+            'id_worker': self.id_worker,
+            }
+
+        col_active_workers.remove(worker)
+
+
+    def ddbb_insert_worker_stats(self, hash_rate, miner_id):
+    #def insert_data(self, hash_rate, miner_id):
+        #currency = self.actual_miner_vars[miner_id]['currency']
+        db_connection = pymongo.Connection('localhost', 27017)
+        cloudminerDB = db_connection.cloudminerDB
+        #col_status = cloudminerDB['col_status']
+        col_worker_stats = cloudminerDB['col_worker_stats']
         ts = time.time()
         timestamp = datetime.datetime.fromtimestamp(ts).strftime('%d-%m-%Y %H:%M:%S')
         status = {
             'id_worker': self.id_worker,
             'id_miner': miner_id,
-            'currency': currency,
+            #'currency': currency,
             'hash_rate': hash_rate,
             'datetime' : timestamp,
             'datetime2' : ts,
             }
 
-        col_status.insert(status)
+        col_worker_stats.insert(status)
         print 'Item inserted!!!'
 
     def monitor_minerd(self):
@@ -107,7 +157,8 @@ class WorkerController(object):
                     num_lines += 1
                     num_lines %= 4
                     if num_lines == 0:
-                        self.insert_data(hash_rate,'m_cpu')
+                        #self.insert_data(hash_rate,'m_cpu')
+                        self.ddbb_insert_worker_stats(hash_rate,'m_cpu')
                         print str(hash_rate)
                         hash_rate = 0  # reset hash count
                 else:
@@ -127,7 +178,8 @@ class WorkerController(object):
                 hash_rate = self.parse_hashes(line)
                 if hash_rate:
                     self.actual_miner_vars['m_gpu']['works_ok'] = True
-                    self.insert_data(hash_rate,'m_gpu')
+                    #self.insert_data(hash_rate,'m_gpu')
+                    self.ddbb_insert_worker_stats(hash_rate,'m_gpu')
                     print str(hash_rate)
                 else:
                     if self.actual_miner_vars['m_gpu']['works_ok'] == None and re.search(r'No device', line):
@@ -149,7 +201,23 @@ class WorkerController(object):
         #     '-O',
         #     'cloudminer.worker1:9868UyAN',
         #     ]
+        
+        currency = self.actual_miner_vars[miner_id]['currency']
+        db_connection = pymongo.Connection('localhost', 27017)
+        cloudminerDB = db_connection.cloudminerDB
+        #col_status = cloudminerDB['col_status']
+        col_active_miners = cloudminerDB['col_active_miners']
+        ts = time.time()
+        timestamp = datetime.datetime.fromtimestamp(ts).strftime('%d-%m-%Y %H:%M:%S')
+        miner = {
+            'id_worker': self.id_worker,
+            'id_miner': miner_id,
+            'currency': currency,
+            'start_time' : timestamp,
+            'start_time2' : ts,
+            }
 
+        col_active_miners.insert(miner)
         if not self.miner_cmds.has_key(miner_id):
             print 'unknown miner \"' + miner_id + '\", unable to start it'
             return
@@ -194,6 +262,14 @@ class WorkerController(object):
             return
         if self.actual_miner_vars[miner_id]['p_miner'] != None:
             print 'Terminating the miner \''+ str(miner_id) + '\''
+            db_connection = pymongo.Connection('localhost', 27017)
+            cloudminerDB = db_connection.cloudminerDB
+            col_active_miners = cloudminerDB['col_active_miners']
+            miner = {
+            'id_worker': self.id_worker,
+            'id_miner': miner_id,
+            }
+            col_active_miners.remove(miner)
             if self.actual_miner_vars[miner_id]['p_miner'].poll() == None:
                 self.actual_miner_vars[miner_id]['p_miner'].terminate()
             self.actual_miner_vars[miner_id]['t_monitor'].join(timeout=10)
@@ -233,6 +309,7 @@ class WorkerController(object):
         elif opcode == 'quit':
             self.stop_all_miners()
             self.delete_all_miners()
+            self.ddbb_remove_worker()
             self.quit_server()
         else:
             print 'Unknown Command'

@@ -12,6 +12,8 @@ import asyncore
 import logging
 import WorkerParser
 import WorkerController
+from time import sleep
+import time
 
 
 class WorkerNode(asyncore.dispatcher):
@@ -24,9 +26,21 @@ class WorkerNode(asyncore.dispatcher):
         self.logger = logging.getLogger('WorkerNode')
         asyncore.dispatcher.__init__(self)
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.bind(address)
+        socket_error = True
+        while socket_error:
+            try:
+                self.bind(address)
+                socket_error = False        
+            except socket.error, msg:
+                print 'encountered following error while configuring connection:'
+                print '[ERROR] ' + msg[1]
+                print 'trying again in 20 seconds...'
+                sleep(20)
+        #self.bind(address)
         self.id_worker = self.generate_id()
         self.address = self.socket.getsockname()
+        #print "ADDRESS: "
+        #print self.address
         self.parser = WorkerParser.WorkerParser()
         self.controller = \
             WorkerController.WorkerController(invoker=self)
@@ -39,7 +53,9 @@ class WorkerNode(asyncore.dispatcher):
         return
 
     def generate_id(self):
-        return "WORKER1"
+        ts = str(int(time.time()))
+        ts1 = ts[0]+ts[len(ts)-1]
+        return "Worker"+ts
         
     def handle_accept(self):
 

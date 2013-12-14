@@ -26,7 +26,46 @@ def send_task(addr, task):
     print 'CALLBACK:' + connector.get_callback()
 
 
-def retrieve_data(worker_id):
+def ddbb_retrieve_workers_status():#worker_id):
+    db_connection = pymongo.Connection('localhost', 27017)
+    cloudminerDB = db_connection.cloudminerDB
+    col_active_workers = cloudminerDB['col_active_workers']
+    cols_w = col_active_workers.find().sort("start_time2",-1)
+    for col_w in cols_w:
+        print "\""+col_w['id_worker']+"\" (alive since: "+col_w['start_time']+") -->"
+        col_active_miners = cloudminerDB['col_active_miners']    
+        cols_m = col_active_miners.find({"id_worker":col_w['id_worker']}).sort("start_time2",-1)
+        #col_m = next(cols_m, None)
+        #if col_m:
+        for col_m in cols_m:
+            print "  - \""+col_m['id_miner']+"\" started at: "+col_m['start_time']
+            print "    - currency:"+col_m['currency']
+            col_worker_stats = cloudminerDB['col_worker_stats']
+            cols_s = col_worker_stats.find({"id_worker":col_w['id_worker'],"id_miner":col_m['id_miner']}).sort("start_time2",-1)
+            col_s = next(cols_s, None)
+            if col_s:
+                print "    - hashing rate: "+str(col_s['hash_rate'])+" MH/s" 
+
+def ddbb_retrieve_connections():
+    address_list = []
+    db_connection = pymongo.Connection('localhost', 27017)
+    cloudminerDB = db_connection.cloudminerDB
+    col_active_workers = cloudminerDB['col_active_workers']    
+    #cols = col_status.find({"id_worker":worker_id},{'datetime':1,'datetime2':1,'hash_rate':1,'_id':0}).sort("datetime2",-1)
+    cols = col_active_workers.find().sort("start_time2",-1)
+    for col in cols:
+        if col['IP']=='0.0.0.0':
+            IP='127.0.0.1'
+        else:
+            IP=col['IP']
+        address_list.append({'worker_id':col['id_worker'],
+                        'IP':IP,
+                        #'port':12345,
+                        'port':col['port'],
+                        })
+    return address_list
+
+'''def ddbb_retrieve_active_workers():
     db_connection = pymongo.Connection('localhost', 27017)
     cloudminerDB = db_connection.cloudminerDB
     col_status = cloudminerDB['col_status']    
@@ -37,7 +76,7 @@ def retrieve_data(worker_id):
         print "last online ("+col['id_miner']+"): "+col['datetime']#+"\n"
         print "hashing rate ("+col['id_miner']+"): "+str(col['hash_rate'])+" MH/s"
     else:
-        print "No data for selected worker" 
+        print "No data for selected worker" '''
 
 
 def gen_separator():
@@ -126,6 +165,29 @@ def ask_command(address):
 
     send_task(address, cmd)
 
+def ask_connection():
+    connection_menu = []
+    address_list = ddbb_retrieve_connections()
+    if(len(address_list)<1):
+        print 'There are no active workers at the moment...'
+        return None
+    else:
+        for con in address_list:
+            connection_menu.append(con['worker_id']+' -> '+con['IP']+':'+str(con['port']))
+        connection_menu.append('Back')
+        choice = query_input('CHOOSE A CONNECTION', connection_menu)
+        #if choice == 1: # 'New connection option
+        #    return 0
+        #el
+        if choice <= len(address_list): # valid connections option
+            return choice
+        elif choice == len(address_list): # 'Back' option
+            return -1
+        else:
+            print '[ERR] Invalid option...'
+            return None
+    
+'''
 def ask_connection(address_list,ask_new):
     connection_menu = []
     if(ask_new):
@@ -143,7 +205,7 @@ def ask_connection(address_list,ask_new):
     else:
         print '[ERR] Invalid option...'
         return None
-
+'''
 def ask_IP():
     ip = raw_input('Enter IPv4 [X.X.X.X] address:\n')
     if re.match('(\d{1,3}\.){3}\d{1,3}', ip):
@@ -189,10 +251,11 @@ def config_connection(connection_number, address_list):
 
 if __name__ == '__main__':
     worker_configured = False
-    address_list = [{'worker_id':'WORKER1',
+    '''address_list = [{'worker_id':'WORKER1',
                      'IP':'127.0.0.1',
-                     'port':0}]
-    
+                     'port':12345}]
+    '''
+    address_list = ddbb_retrieve_connections()
     logging.basicConfig(level=logging.DEBUG,
                         format='%(name)s: %(message)s')
     header = '  - C L O U D M I N E R -  '
@@ -216,7 +279,8 @@ if __name__ == '__main__':
         if choice == 1:
             #print 'You chose \'Connections setup\''
             print 'You chose \"'+ main_menu[0] +'\"'
-            connection_number = ask_connection(address_list,True)
+            #connection_number = ask_connection(address_list,True)
+            connection_number = ask_connection()
             if connection_number != None:
                 if connection_number == 0:
                     address = ask_address()
@@ -235,26 +299,29 @@ if __name__ == '__main__':
             print 'You chose \"'+ main_menu[1] +'\"'
             #address = ask_address()
             #if address != (None, None):
-            if(len(address_list)>0):
-                connection_number = ask_connection(address_list,False)
-                if connection_number != None and connection_number != -1: 
-                    address = (address_list[connection_number-1]['IP'],address_list[connection_number-1]['port'])
-                    print address
-                    #Probe destinatary to check if it is alive
-                    go_back = False
-                    while not go_back:
-                        go_back = ask_command(address) == 'Back'
-            else:
-                print 'No connections configured...'
+            #if(len(address_list)>0):
+                #connection_number = ask_connection(address_list,False)
+            connection_number = ask_connection()
+            if connection_number != None and connection_number != -1: 
+                address = (address_list[connection_number-1]['IP'],address_list[connection_number-1]['port'])
+                print address
+                #Probe destinatary to check if it is alive
+                go_back = False
+                while not go_back:
+                    go_back = ask_command(address) == 'Back'
+            #else:
+            #    print 'No connections configured...'
         elif choice == 3:
             #print 'You chose \'View worker status\''
             print 'You chose \"'+ main_menu[2] +'\"'
             #worker = choice = raw_input('Enter worker\'s id: ')
-            #retrieve_data(worker)
-            retrieve_data('WORKER1')
+            #ddbb_retrieve_worker_status(worker)
+            #ddbb_retrieve_worker_status('WORKER1')
+            ddbb_retrieve_workers_status()
         elif choice == 4:
             is_exit = True
             print 'Exiting...'
+            
         else:
             print '[ERR] Invalid input number. Try again...'
 
