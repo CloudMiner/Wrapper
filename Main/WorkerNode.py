@@ -14,8 +14,8 @@ import WorkerParser
 import WorkerController
 from time import sleep
 import time
-
-
+import atexit
+    
 class WorkerNode(asyncore.dispatcher):
 
     '''
@@ -51,7 +51,10 @@ class WorkerNode(asyncore.dispatcher):
         print os.path.dirname(__file__)
         
         return
-
+    
+    def get_worker_id(self):
+        return self.id_worker
+    
     def generate_id(self):
         ts = str(int(time.time()))
         ts1 = ts[0]+ts[len(ts)-1]
@@ -155,11 +158,15 @@ class WorkerHandler(asyncore.dispatcher):
         self.close()
         self.work()  # work after close this socket
 
-
+def exit_handler(worker):
+    print 'ending application :: ' +worker.get_worker_id()+ '!!'
+    worker.controller.quit()
+        
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG,
                         format='%(name)s: %(message)s')
 
     address_server = ('0.0.0.0', 0)
-    WorkerNode(address_server)
+    w = WorkerNode(address_server)
+    atexit.register(exit_handler, w)
     asyncore.loop()

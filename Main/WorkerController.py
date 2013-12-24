@@ -318,7 +318,14 @@ class WorkerController(object):
     def quit_server(self):
         self.invoker.handle_close()
 
-
+    
+    def quit(self):
+        self.stop_all_miners()
+        self.delete_all_miners()
+        self.ddbb_remove_worker()
+        self.quit_server()
+        
+    
     def execute_cmd(self, cmd):
         print str(cmd) + ' to be executed'
         opcode = str(cmd[0])

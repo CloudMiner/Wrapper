@@ -159,6 +159,7 @@ def ask_command(address):
         cmd = 'test ' + miner
     elif choice == 4:
         cmd = 'quit'
+        #return 'Back'
     elif choice == 5:
         return 'Back'
     else:
@@ -166,6 +167,8 @@ def ask_command(address):
         return None
 
     send_task(address, cmd)
+    if choice == 4:
+        return 'Back'
 
 def ask_connection():
     connection_menu = []
@@ -303,6 +306,7 @@ if __name__ == '__main__':
             #if address != (None, None):
             #if(len(address_list)>0):
                 #connection_number = ask_connection(address_list,False)
+            address_list = ddbb_retrieve_connections()
             connection_number = ask_connection()
             if connection_number != None and connection_number != -1: 
                 address = (address_list[connection_number-1]['IP'],address_list[connection_number-1]['port'])
