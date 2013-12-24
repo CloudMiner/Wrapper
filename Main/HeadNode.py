@@ -131,9 +131,11 @@ def ask_miner():
     miner_menu = ['minerd (cpuminer)', 'bfgminer (GPU)', 'Back']
     choice = query_input('CHOOSE A MINER', miner_menu)
     if choice == 1:
-        return 'm_cpu'
+        #return 'm_cpu'
+        return '11232'
     elif choice == 2:
-        return 'm_gpu'
+        #return 'm_gpu'
+        return '21xxx'
     elif choice == 3:
         return 'Back'
     else:
@@ -259,7 +261,7 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG,
                         format='%(name)s: %(message)s')
     header = '  - C L O U D M I N E R -  '
-    subtitle = '    Head Node v0.2 alpha    '
+    subtitle = '    Head Node v0.3 alpha    '
     #main_menu = ['Send command', 'View status', 'Exit']
     #if worker_configured:
     main_menu = ['Connections setup', 'Send command', 'View worker status', 'Exit']
