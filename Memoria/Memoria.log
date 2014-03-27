@@ -1,21 +1,21 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (MiKTeX 2.9) (preloaded format=pdflatex 2013.10.19)  24 NOV 2013 18:22
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2014.2.25)  25 FEB 2014 22:15
 entering extended mode
+ Source specials enabled.
+ %&-line parsing enabled.
 **Memoria.tex
-(C:\Users\Tomas\git\Wrapper4\Memoria\Memoria.tex
-LaTeX2e <2011/06/27>
-Babel <v3.8m> and hyphenation patterns for english, afrikaans, ancientgreek, ar
-abic, armenian, assamese, basque, bengali, bokmal, bulgarian, catalan, coptic, 
-croatian, czech, danish, dutch, esperanto, estonian, farsi, finnish, french, ga
-lician, german, german-x-2012-05-30, greek, gujarati, hindi, hungarian, iceland
-ic, indonesian, interlingua, irish, italian, kannada, kurmanji, latin, latvian,
- lithuanian, malayalam, marathi, mongolian, mongolianlmc, monogreek, ngerman, n
-german-x-2012-05-30, nynorsk, oriya, panjabi, pinyin, polish, portuguese, roman
-ian, russian, sanskrit, serbian, slovak, slovenian, spanish, swedish, swissgerm
-an, tamil, telugu, turkish, turkmen, ukenglish, ukrainian, uppersorbian, usengl
-ishmax, welsh, loaded.
-("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\report.cls"
+(./Memoria.tex
+LaTeX2e <2009/09/24>
+Babel <v3.8l> and hyphenation patterns for english, usenglishmax, dumylang, noh
+yphenation, farsi, arabic, croatian, bulgarian, ukrainian, russian, czech, slov
+ak, danish, dutch, finnish, french, basque, ngerman, german, german-x-2009-06-1
+9, ngerman-x-2009-06-19, ibycus, monogreek, greek, ancientgreek, hungarian, san
+skrit, italian, latin, latvian, lithuanian, mongolian2a, mongolian, bokmal, nyn
+orsk, romanian, irish, coptic, serbian, turkish, welsh, esperanto, uppersorbian
+, estonian, indonesian, interlingua, icelandic, kurmanji, slovenian, polish, po
+rtuguese, spanish, galician, catalan, swedish, ukenglish, pinyin, loaded.
+(/usr/share/texmf-texlive/tex/latex/base/report.cls
 Document Class: report 2007/10/19 v1.4h Standard LaTeX document class
-("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\size12.clo"
+(/usr/share/texmf-texlive/tex/latex/base/size12.clo
 File: size12.clo 2007/10/19 v1.4h Standard LaTeX file (size option)
 )
 \c@part=\count79
@@ -31,55 +31,42 @@ File: size12.clo 2007/10/19 v1.4h Standard LaTeX file (size option)
 \belowcaptionskip=\skip42
 \bibindent=\dimen102
 )
-("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\graphics\graphicx.sty"
+(/usr/share/texmf-texlive/tex/latex/graphics/graphicx.sty
 Package: graphicx 1999/02/16 v1.0f Enhanced LaTeX Graphics (DPC,SPQR)
 
-("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\graphics\keyval.sty"
+(/usr/share/texmf-texlive/tex/latex/graphics/keyval.sty
 Package: keyval 1999/03/16 v1.13 key=value parser (DPC)
 \KV@toks@=\toks14
 )
-("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\graphics\graphics.sty"
+(/usr/share/texmf-texlive/tex/latex/graphics/graphics.sty
 Package: graphics 2009/02/05 v1.0o Standard LaTeX Graphics (DPC,SPQR)
 
-("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\graphics\trig.sty"
+(/usr/share/texmf-texlive/tex/latex/graphics/trig.sty
 Package: trig 1999/03/16 v1.09 sin cos tan (DPC)
 )
-("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\00miktex\graphics.cfg"
-File: graphics.cfg 2007/01/18 v1.5 graphics configuration of teTeX/TeXLive
+(/etc/texmf/tex/latex/config/graphics.cfg
+File: graphics.cfg 2009/08/28 v1.8 graphics configuration of TeX Live
 )
 Package graphics Info: Driver file: pdftex.def on input line 91.
 
-("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\pdftex-def\pdftex.def"
-File: pdftex.def 2011/05/27 v0.06d Graphics/color for pdfTeX
-
-("C:\Program Files (x86)\MiKTeX 2.9\tex\generic\oberdiek\infwarerr.sty"
-Package: infwarerr 2010/04/08 v1.3 Providing info/warning/error messages (HO)
-)
-("C:\Program Files (x86)\MiKTeX 2.9\tex\generic\oberdiek\ltxcmds.sty"
-Package: ltxcmds 2011/11/09 v1.22 LaTeX kernel commands for general use (HO)
-)
+(/usr/share/texmf-texlive/tex/latex/pdftex-def/pdftex.def
+File: pdftex.def 2010/03/12 v0.04p Graphics/color for pdfTeX
 \Gread@gobject=\count88
 ))
 \Gin@req@height=\dimen103
 \Gin@req@width=\dimen104
 )
-("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\syntonly.sty"
+(/usr/share/texmf-texlive/tex/latex/base/syntonly.sty
 Package: syntonly 1999/09/17 v2.1e Standard LaTeX2e package
 )
-("C:\Program Files (x86)\MiKTeX 2.9\tex\generic\babel\babel.sty"
-Package: babel 2008/07/08 v3.8m The Babel package
+(/var/lib/texmf/tex/generic/babel/babel.sty
+Package: babel 2008/07/06 v3.8l The Babel package
 
-*************************************
-* Local config file bblopts.cfg used
-*
-("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\00miktex\bblopts.cfg"
-File: bblopts.cfg 2006/07/31 v1.0 MiKTeX 'babel' configuration
-)
-("C:\Program Files (x86)\MiKTeX 2.9\tex\generic\babel\spanish.ldf"
+(/usr/share/texmf-texlive/tex/generic/babel/spanish.ldf
 Language: spanish.ldf 2009/01/02 v5.0h Spanish support from the babel system
 
-("C:\Program Files (x86)\MiKTeX 2.9\tex\generic\babel\babel.def"
-File: babel.def 2008/07/08 v3.8m Babel common definitions
+(/usr/share/texmf-texlive/tex/generic/babel/babel.def
+File: babel.def 2008/07/06 v3.8l Babel common definitions
 \babel@savecnt=\count89
 \U@D=\dimen105
 )
@@ -90,13 +77,11 @@ Package babel Info: Making " an active character on input line 492.
 Package babel Info: Making . an active character on input line 585.
 Package babel Info: Making < an active character on input line 630.
 Package babel Info: Making > an active character on input line 630.
-))
-(C:\Users\Tomas\git\Wrapper4\Memoria\Memoria.aux
-(C:\Users\Tomas\git\Wrapper4\Memoria\titlepage.aux)
-(C:\Users\Tomas\git\Wrapper4\Memoria\authorization.aux)
-(C:\Users\Tomas\git\Wrapper4\Memoria\acknowledgements.aux)
-(C:\Users\Tomas\git\Wrapper4\Memoria\abstract.aux)
-(C:\Users\Tomas\git\Wrapper4\Memoria\chapter1.aux))
+)) (./Memoria.aux
+(./titlepage.aux) (./authorization.aux) (./acknowledgements.aux)
+(./abstract.aux) (./chapter1.aux))
+\openout1 = `Memoria.aux'.
+
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 15.
 LaTeX Font Info:    ... okay on input line 15.
 LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 15.
@@ -110,7 +95,7 @@ LaTeX Font Info:    ... okay on input line 15.
 LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 15.
 LaTeX Font Info:    ... okay on input line 15.
 
-("C:\Program Files (x86)\MiKTeX 2.9\tex\context\base\supp-pdf.mkii"
+(/usr/share/texmf-texlive/tex/context/base/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count92
 \scratchdimen=\dimen106
@@ -121,14 +106,14 @@ LaTeX Font Info:    ... okay on input line 15.
 \MPscratchCnt=\count95
 \MPscratchDim=\dimen107
 \MPnumerator=\count96
-\makeMPintoPDFobject=\count97
 \everyMPtoPDFconversion=\toks17
-) (C:\Users\Tomas\git\Wrapper4\Memoria\titlepage.tex
-<./logoucm.jpg, id=1, 689.57625pt x 715.67375pt>
+)
+\openout2 = `./titlepage.aux'.
+
+ (./titlepage.tex <./logoucm.jpg, id=1, 689.57625pt x 715.67375pt>
 File: ./logoucm.jpg Graphic file (type jpg)
- <use ./logoucm.jpg>
-Package pdftex.def Info: ./logoucm.jpg used on input line 16.
-(pdftex.def)             Requested size: 195.0pt x 202.37477pt.
+
+<use ./logoucm.jpg>
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <17.28> on input line 34.
 LaTeX Font Info:    External font `cmex10' loaded for size
@@ -136,29 +121,27 @@ LaTeX Font Info:    External font `cmex10' loaded for size
  [1
 
 
-{C:/ProgramData/MiKTeX/2.9/pdftex/config/pdftex.map} <C:/Users/Tomas/git/Wrappe
-r4/Memoria/logoucm.jpg>]) (C:\Users\Tomas\git\Wrapper4\Memoria\Memoria.toc
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map} <./logoucm.jpg>]) (./Memori
+a.toc
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <8> on input line 3.
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <6> on input line 3.
 )
 \tf@toc=\write3
+\openout3 = `Memoria.toc'.
+
  [1
 
 
 ]
-(C:\Users\Tomas\git\Wrapper4\Memoria\authorization.tex
+\openout2 = `./authorization.aux'.
+
+ (./authorization.tex
 Underfull \hbox (badness 10000) in paragraph at lines 3--4
 
  []
 
-Missing character: There is no á in font cmr12!
-Missing character: There is no á in font cmr12!
-Missing character: There is no é in font cmr12!
-Missing character: There is no ó in font cmr12!
-Missing character: There is no ó in font cmr12!
-Missing character: There is no é in font cmr12!
 
 Underfull \hbox (badness 10000) in paragraph at lines 5--11
 
@@ -176,7 +159,10 @@ Underfull \hbox (badness 10000) in paragraph at lines 14--15
 
 ) [2
 
-] (C:\Users\Tomas\git\Wrapper4\Memoria\acknowledgements.tex
+]
+\openout2 = `./acknowledgements.aux'.
+
+ (./acknowledgements.tex
 Underfull \hbox (badness 10000) in paragraph at lines 2--3
 
  []
@@ -184,50 +170,79 @@ Underfull \hbox (badness 10000) in paragraph at lines 2--3
 ) [3
 
 
-] (C:\Users\Tomas\git\Wrapper4\Memoria\abstract.tex
-Missing character: There is no ñ in font cmr12!
+]
+\openout2 = `./abstract.aux'.
 
-Underfull \hbox (badness 10000) in paragraph at lines 16--17
+ (./abstract.tex
+Missing character: There is no ï in font cmr12!
+Missing character: There is no ¿ in font cmr12!
+Missing character: There is no ½ in font cmr12!
+
+Underfull \hbox (badness 10000) in paragraph at lines 18--19
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 18--19
+Underfull \hbox (badness 10000) in paragraph at lines 20--21
 
  []
 
 ) [4
 
 
-] (C:\Users\Tomas\git\Wrapper4\Memoria\chapter1.tex
+]
+\openout2 = `./chapter1.aux'.
+
+ (./chapter1.tex
 Cap\'{\i }tulo 1.
-) [5
+[5
 
 
 
-] (C:\Users\Tomas\git\Wrapper4\Memoria\Memoria.aux
-(C:\Users\Tomas\git\Wrapper4\Memoria\titlepage.aux)
-(C:\Users\Tomas\git\Wrapper4\Memoria\authorization.aux)
-(C:\Users\Tomas\git\Wrapper4\Memoria\acknowledgements.aux)
-(C:\Users\Tomas\git\Wrapper4\Memoria\abstract.aux)
-(C:\Users\Tomas\git\Wrapper4\Memoria\chapter1.aux)) ) 
+] [6]
+Missing character: There is no Ã in font cmr12!
+Missing character: There is no ± in font cmr12!
+Missing character: There is no Ã in font cmr12!
+Missing character: There is no ± in font cmr12!
+Missing character: There is no Ã in font cmr12!
+Missing character: There is no ± in font cmr12!
+Missing character: There is no Ã in font cmr12!
+Missing character: There is no ± in font cmr12!
+ [7]
+Missing character: There is no Ã in font cmr12!
+Missing character: There is no ± in font cmr12!
+Missing character: There is no Ã in font cmr12!
+Missing character: There is no ± in font cmr12!
+ [8]
+Overfull \hbox (6.49976pt too wide) in paragraph at lines 87--87
+[]\OT1/cmr/bx/n/17.28 Rendimiento compu-tacio-nal de la mi-ner^^S^^Pa 
+ []
+
+Missing character: There is no Ã in font cmr12!
+Missing character: There is no ± in font cmr12!
+Missing character: There is no Ã in font cmr12!
+Missing character: There is no ± in font cmr12!
+Missing character: There is no Ã in font cmr12!
+Missing character: There is no ± in font cmr12!
+) [9] [10] (./Memoria.aux (./titlepage.aux) (./authorization.aux)
+(./acknowledgements.aux) (./abstract.aux) (./chapter1.aux)) ) 
 Here is how much of TeX's memory you used:
- 1828 strings out of 493921
- 24885 string characters out of 3144875
- 80544 words of memory out of 3000000
- 5109 multiletter control sequences out of 15000+200000
+ 1612 strings out of 493848
+ 20001 string characters out of 1152823
+ 80944 words of memory out of 3000000
+ 4883 multiletter control sequences out of 15000+50000
  10090 words of font info for 36 fonts, out of 3000000 for 9000
- 841 hyphenation exceptions out of 8191
- 27i,4n,27p,240b,257s stack positions out of 5000i,500n,10000p,200000b,50000s
-<C:/Program Files (x86)/Mi
-KTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Program Files (x86)/MiKT
-eX 2.9/fonts/type1/public/amsfonts/cm/cmcsc10.pfb><C:/Program Files (x86)/MiKTe
-X 2.9/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Program Files (x86)/MiKTeX 2
-.9/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Program Files (x86)/MiKTeX 2.9/
-fonts/type1/public/amsfonts/cm/cmti12.pfb>
-Output written on Memoria.pdf (6 pages, 170812 bytes).
+ 714 hyphenation exceptions out of 8191
+ 25i,5n,27p,1157b,257s stack positions out of 5000i,500n,10000p,200000b,50000s
+</usr/share/texmf-
+texlive/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/texmf-texlive/fon
+ts/type1/public/amsfonts/cm/cmcsc10.pfb></usr/share/texmf-texlive/fonts/type1/p
+ublic/amsfonts/cm/cmr12.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfon
+ts/cm/cmr17.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmti12
+.pfb>
+Output written on Memoria.pdf (11 pages, 186828 bytes).
 PDF statistics:
- 42 PDF objects out of 1000 (max. 8388607)
+ 59 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  6 words of extra memory for PDF output out of 10000 (max. 10000000)
 

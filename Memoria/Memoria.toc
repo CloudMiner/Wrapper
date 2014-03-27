@@ -1,10 +1,20 @@
 \select@language {spanish}
 \contentsline {chapter}{\numberline {1}Introducci\'on}{5}
-\contentsline {section}{\numberline {1.1}Planteamiento del problema}{5}
-\contentsline {section}{\numberline {1.2}Objetivos y alcance del proyecto}{5}
-\contentsline {section}{\numberline {1.3}Situaci\'on actual fdi-UCM}{5}
-\contentsline {subsection}{\numberline {1.3.1}Hardware existente - rentabilizaci\'on}{5}
-\contentsline {subsection}{\numberline {1.3.2}Desaprovechamiento de recursos}{5}
-\contentsline {subsubsection}{Consumo energ\'etico}{5}
-\contentsline {subsubsection}{otros\dots ??}{5}
-\contentsline {section}{\numberline {1.4}Posibles ampliaciones}{5}
+\contentsline {section}{\numberline {1.1}Divisas electr\'onicas, Bitcoin}{5}
+\contentsline {subsection}{\numberline {1.1.1}Fundamentos}{5}
+\contentsline {subsection}{\numberline {1.1.2}Origen del Bitcoin}{6}
+\contentsline {subsection}{\numberline {1.1.3}Seguridad}{6}
+\contentsline {subsection}{\numberline {1.1.4}Protocolo}{7}
+\contentsline {subsubsection}{Direcciones}{7}
+\contentsline {subsubsection}{Transacciones}{7}
+\contentsline {subsubsection}{Cadena de bloques}{8}
+\contentsline {subsubsection}{Mining}{8}
+\contentsline {section}{\numberline {1.2}Rendimiento computacional de la miner\'ia}{9}
+\contentsline {section}{\numberline {1.3}Planteamiento del problema}{10}
+\contentsline {section}{\numberline {1.4}Objetivos y alcance del proyecto}{10}
+\contentsline {section}{\numberline {1.5}Situaci\'on actual de la fdi-UCM}{10}
+\contentsline {subsection}{\numberline {1.5.1}Hardware existente - rentabilizaci\'on}{10}
+\contentsline {subsection}{\numberline {1.5.2}Desaprovechamiento de recursos}{10}
+\contentsline {subsubsection}{Consumo energ\'etico}{10}
+\contentsline {subsubsection}{otros\dots ??}{10}
+\contentsline {section}{\numberline {1.6}Posibles ampliaciones}{10}

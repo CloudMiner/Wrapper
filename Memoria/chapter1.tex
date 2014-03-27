@@ -1,10 +1,103 @@
 \chapter{Introducci\'on}
 
+\section{Divisas electr\'onicas, Bitcoin}
+
+\subsection{Fundamentos}
+
+El fen\'omeno del dinero electr\'onico se est\'a extendiendo para dar soporte a las actividades 
+que se desarrollan en el ciberespacio. Una de las primeras actividades virtuales que inclu\'ia el 
+concepto de divisa virtual fue SecondLife, una red social en la que los usuarios pod\'ian 
+interactuar entre s\'i en el mundo virtual que defin\'ia. Con la implantaci\'on de una moneda 
+virtual, Linden Dollar, los usuarios pod\'ian adquirir objetos y posesiones virtuales. Para 
+obtener cr\'edito se pod\'ian realizar actividades en el juego o bien recurrir a cambiar dinero 
+real por cr\'editos del mundo virtual. Supon\'ia el primer paso en la creaci\'on de productos 
+virtuales por los que los usuarios estaban dispuestos a pagar. Este modelo se populariz\'o 
+r\'apidamente y empezaron a surgir juegos multijugador online donde los jugadores pod\'ian 
+acceder a objetos, misiones o mejoras mediante la compra de cr\'editos. 
+\newline 
+Con la explosi\'on del uso de internet, la utilizaci\'on de medios virtuales de pago tambi\'en se ha 
+generalizado para facilitar las operaciones y obtener una mayor seguridad en las 
+transacciones. El objetivo es reducir los riesgos asociados a proporcionar a un desconocido 
+los datos bancarios personales. As\'i, servicios como PayPal o Google Wallet, entre otros 
+muchos, proporcionan un monedero virtual con el que se pueden realizar pagos en infinidad 
+de servicios de todo tipo prestados en la red. 
+ 
+Sin embargo, en ciertos entornos se ha hecho necesario ir un paso m\'as all\'a con objeto de 
+alcanzar el anonimato total en las transacciones. En este contexto, donde el anonimato de la 
+red resulta imprescindible para los art\'ifices de ciertas actividades, surgen las denominadas 
+divisas electr\'onicas. Se trata de activos equivalentes al dinero en met\'alico, dado que no 
+identifican al poseedor y no queda constancia de las operaciones que \'este lleva a cabo.
+
+Para poder analizar con cierto detalle el funcionamiento de las divisas electr\'onicas, tomamos a partir de ahora como caso particular el Bitcoin.
+
+\subsection{Origen del Bitcoin}
+
+Bitcoin fue concebido en 2008 por una persona (o grupo de personas) bajo el seud\'onimo "Satoshi Nakamoto". La creaci\'on de la primera aplicaci\'on para operar con Bitcoins tambi\'en se le atribuye. Sin embargo, existen dudas sobre la nacionalidad e incluso sobre la existencia real de esta persona y hay m\'ultiples especulaciones sobre su identidad real.
+
+Bajo este seud\'onimo se public\'o tambi\'en un libro que propone un sistema de transacciones electr\'onicas que no depende de la confianza, sino que permite realizar transferencias de forma directa sin la necesidad de un intermediario. Al contrario de la mayor\'ia de las monedas, el Bitcoin no est\'a respaldado por ning\'un gobierno ni depende de la confianza en ning\'un emisor central, sino que utiliza un sistema de prueba de trabajo para impedir el doble gasto y alcanzar el consenso entre todos los nodos que integran la red.
+
+Desde que se puso en funcionamiento en 2009 el sistema ha ido ganando popularidad 
+gracias a las caracter\'isticas de anonimato con las que permite realizar transacciones 
+comerciales y al inter\'es especulativo que ha despertado la evoluci\'on de su cotizaci\'on al 
+cambio con monedas reales.
+
+\subsection{Seguridad}
+
+La seguridad de la mayor\'ia de las criptomonedas (y en particular de Bitcoin) reside en la utilizaci\'on de t\'ecnicas de criptograf\'ia para la protecci\'on del saldo del usuario. La firma y la verificaci\'on de las solicitudes de transacci\'on se realizan mediante t\'ecnicas de criptograf\'ia de clave p\'ublica. 
+ 
+Para hacer operaciones es necesario distribuir la clave p\'ublica de forma generalizada para que cuando se le remita informaci\'on a un destinatario \'este pueda comprobar que la informaci\'on es v\'alida, correcta y que corresponde a informaci\'on que s\'olo ha podido ser generada por una persona que posee la clave privada.
+ 
+El proceso por el que se aplica la clave privada a la informaci\'on que se va a transferir se 
+denomina firma y consiste en obtener un n\'umero que depende de la informaci\'on a 
+transmitir y de la clave privada. El receptor, a partir de la informaci\'on recibida y la clave 
+p\'ublica del usuario, obtiene un nuevo n\'umero que, si coincide con el enviado, permite 
+validar la autenticidad y fiabilidad de la informaci\'on. 
+ 
+Una vez garantizada la seguridad del saldo del usuario, el sistema tambi\'en debe asegurar 
+que las transacciones son correctas y que el poseedor de un saldo no puede gastarlo m\'as de 
+una vez. Para ello se utilizan t\'ecnicas de sellado temporal con las que se registra el momento 
+exacto en el que se solicita una transacci\'on de bitcoins. Los nodos de procesado tienen en 
+cuenta estos valores para determinar cu\'ando una transacci\'on es v\'alida o no.
+
+\subsection{Protocolo}
+
+\subsubsection{Direcciones}
+
+Todo participante de la red Bitcoin tiene una cartera electr\'onica que contiene un n\'umero arbitrario de claves criptogr\'aficas. A partir de la clave p\'ublica, se obtiene la direcci\'on Bitcoin, que funciona como la entidad remitente y receptora para todos los pagos. Su clave privada correspondiente autoriza el pago solo para ese usuario. Las direcciones no tienen ninguna informaci\'on sobre su dueño, son generalmente an\'onimas y no requieren de ning\'un contacto con los nodos de la red para su generaci\'on.
+
+Las direcciones son secuencias alfanum\'ericas aleatorias de 33 caracteres de largo, en formato legible para personas, como puede verse en este ejemplo: 1LtU9rMsQ41rCqsJAvMtw89TA5XT2dW7f9. Utilizan una codificaci\'on en Base58, que resulta de eliminar los siguientes seis caracteres del sistema Base64: 0 (cero), I (i may\'uscula), O (o may\'uscula), l (L min\'uscula), + (m\'as) y / (barra). De esta forma, se componen \'unicamente de caracteres alfanum\'ericos que se distinguen entre s\'i en cualquier tipo de letra. Las direcciones Bitcoin tambi\'en incluyen un checksum de 32 bitsNota 4 para detectar cambios accidentales en la secuencia de caracteres.
+
+\subsubsection{Transacciones}
+
+Los Bitcoins contienen la direcci\'on p\'ublica de su dueño. Cuando un usuario A transfiere algo a un usuario B, A entrega la propiedad agregando la clave p\'ublica de B y despu\'es firmando con su clave privada.31 A entonces incluye esos bitcoins en una transacci\'on, y la difunde a los nodos de la red P2P a los que est\'a conectado. Estos nodos validan las firmas criptogr\'aficas y el valor de la transacci\'on antes de aceptarla y retransmitirla. Este procedimiento propaga la transacci\'on de manera indefinida hasta alcanzar a todos los nodos de la red P2P.
+
+\subsubsection{Cadena de bloques}
+
+Todos los nodos que forman parte de la red Bitcoin mantienen una lista colectiva de todas las transacciones conocidas, a la que se denomina la cadena de bloques. Los nodos generadores, tambi\'en llamados mineros, crean los nuevos bloques, añadiendo en cada uno de ellos el hash del \'ultimo bloque de la cadena m\'as larga de la que tienen conocimiento, as\'i como las nuevas transacciones publicadas en la red. Cuando un minero encuentra un nuevo bloque, lo transmite al resto de los nodos a los que est\'a conectado. En el caso de que resulte un bloque v\'alido, estos nodos lo agregan a la cadena y lo vuelven a retransmitir. Este proceso se repite indefinidamente hasta que el bloque ha alcanzado todos los nodos de la red. Eventualmente, la cadena de bloques contiene el historial de posesi\'on de todas las monedas desde la direcci\'on creadora a la direcci\'on del actual dueño. Por lo tanto, si un usuario intenta reutilizar monedas que ya us\'o, la red rechazar\'a la transacci\'on.
+
+\subsubsection{Mining}
+
+La generaci\'on de bloques se conoce en ingl\'es como mining y puede traducirse al español como extracci\'on por analog\'ia con la miner\'ia del oro. Todos los nodos generadores de la red est\'an compitiendo para ser el primero en encontrar la soluci\'on al problema criptogr\'afico de su bloque-candidato actual, mediante un sistema de pruebas de trabajo, resolviendo un problema que requiere varios intentos repetitivos, por fuerza bruta, no determinista, de manera que se evita que mineros con gran nivel de procesamiento dejen fuera a los m\'as pequeños. De esta forma, la frecuencia de localizaci\'on de cada bloque sigue una distribuci\'on de Poisson y la probabilidad de que un minero lo encuentre depende del poder computacional con el que contribuye a la red en relaci\'on al poder computacional de todos los nodos combinados, lo que permite que el sistema funcione de manera descentralizada. Los nodos que reciben el nuevo bloque solucionado lo validan antes de aceptarlo, agreg\'andolo a la cadena. La validaci\'on de la soluci\'on proporcionada por el minero es trivial y se realiza inmediatamente.
+
+La red reajusta la dificultad cada 2016 bloques, es decir, aproximadamente cada 2 semanas, para que un bloque sea generado cada diez minutos. La cantidad de Bitcoins creada por bloque nunca es m\'as de 25 BTC, y los premios est\'an programados para disminuir con el paso del tiempo hasta llegar a cero, garantizando que no puedan existir m\'as de 21 millones de BTC.
+
+Los mineros no tienen la obligaci\'on de incluir transacciones en los bloques que generan, por lo que los remitentes de Bitcoins pueden pagar voluntariamente una tarifa para que tramiten sus transacciones m\'as r\'apidamente. Como el premio por bloque disminuye con el paso del tiempo, en el largo plazo todas las recompensas de los nodos generadores provendr\'an \'unicamente de las tarifas de transacci\'on.
+
+
+\section{Rendimiento computacional de la miner\'ia}
+
+Las estrategias para la extracci\'on de Bitcoins se han ido perfeccionando progresivamente. En los primeros meses de funcionamiento de la red era posible extraer en solitario con una CPU est\'andar y obtener un bloque y sus 50 BTC asociados con una frecuencia relativamente alta. Posteriormente, la aparici\'on de software de miner\'ia adaptado a tarjetas gr\'aficas, mucho m\'as eficiente, desplaz\'o completamente a las CPUs. La miner\'ia por GPUs se fue profesionalizando, con grandes instalaciones en pa\'ises con energ\'ia barata, configuraciones personalizadas con uso generalizado de overclocking y sistemas especiales de refrigeraci\'on. Con el aumento sostenido de la dificultad, los mineros comenzaron a organizarse en grupos independientes (en ingl\'es, pools) para extraer de manera colectiva, desplazando as\'i a los mineros en solitario que pod\'ian tardar meses o incluso años en encontrar un bloque de manera individual. El propietario del pool se lleva una comisi\'on por encontrar un bloque. Los pools tambi\'en compiten entre ellos para intentar atraer al mayor n\'umero de mineros.
+
+Durante el año 2013 se han comenzado a distribuir FPGAs y ASICs para extraer Bitcoins de manera m\'as eficiente. Si con la miner\'ia con CPUs y tarjetas gr\'aficas, el coste de explotaci\'on proven\'ia fundamentalmente del gasto energ\'etico, la comercializaci\'on de equipos especializados de bajo consumo est\'a desplazando las inversiones de los mineros hacia hardware m\'as sofisticado, e indirectamente hacia la investigaci\'on necesaria para el desarrollo de estos productos.
+
+El 30 de julio de 2012, en el bloque 191 520, la dificultad marc\'o un m\'aximo hist\'orico y super\'o por primera vez el valor de dos millones, con una potencia de procesamiento de 14 TeraHash/segundo. Un año y medio despu\'es, en enero de 2014, la dificultad se multiplic\'o por 1000 hasta alcanzar pr\'acticamente el valor de 2000 millones, con una potencia de procesamiento de 14 PetaHash/segundo  (14 000 000 000 000 000 Hash/segundo).
+
+
 \section{Planteamiento del problema}
 
 \section{Objetivos y alcance del proyecto}
 
-\section{Situaci\'on actual fdi-UCM}
+\section{Situaci\'on actual de la fdi-UCM}
 
 \subsection{Hardware existente - rentabilizaci\'on}
 
