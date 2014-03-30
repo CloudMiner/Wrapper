@@ -7,14 +7,20 @@ Created on 20/10/2013
 @author: hackturo
 '''
 
-import socket
-import asyncore
-import logging
-import WorkerParser
-import WorkerController
 from time import sleep
-import time
+import WorkerController
+import WorkerParser
+import asyncore
 import atexit
+import logging
+import multiprocessing
+import pymysql
+import socket
+import sys
+import time
+import os
+import platform
+        
     
 class WorkerNode(asyncore.dispatcher):
 
@@ -39,18 +45,190 @@ class WorkerNode(asyncore.dispatcher):
         #self.bind(address)
         self.id_worker = self.generate_id()
         self.address = self.socket.getsockname()
+#         print "IP: " , self.address[0]
+#         print "port: " , self.address[1]
+#         print "" 
+        self.machine_name = socket.gethostname()
         #print "ADDRESS: "
         #print self.address
+        self.is64bits  = sys.maxsize > 2 ** 32
+        self.num_cpus = multiprocessing.cpu_count()
+        self.platform = platform.system()
+        if(self.platform.find('Windows')):
+            self.plat_type = platform.linux_distribution()[0]
+            self.plat_version = platform.linux_distribution()[1]
+        elif(self.platform.find('Linux')):
+            self.plat_type = "unique"
+            self.plat_version = platform.win32_ver()[0] 
+        else:
+            pass
+
+        if(self.is64bits):
+            self.plat_arch = '64bit'
+        else:
+            self.plat_arch = '32bit' 
+        
+        print os.path.dirname(__file__)
+        
+        self.conn_mysql = pymysql.connect(host='127.0.0.1', port=3306, user='clminer', passwd='cloudminer2014', db='cloudminer')
+        self.cur = self.conn_mysql.cursor()
+        
+        self.ddbb_obtain_platform_id()
+        self.ddbb_obtain_machine_id()
+        
+        #cur.execute("INSERT INTO machine (name, ip, port, platform_id) VALUES ()")
+        
         self.parser = WorkerParser.WorkerParser()
         self.controller = \
             WorkerController.WorkerController(invoker=self)
         self.logger.debug('binding to %s', self.address)
         self.listen(1)
+        return 
+    
+    def ddbb_obtain_machine_id(self):
+        self.cur.execute("SELECT * FROM machine")
+        struct = self.cur.description
+        i = 0;
+        id_idx = -1
+        name_idx = -1
+        ip_idx = -1
+        port_idx = -1
+        plat_id_idx = -1
+        for s in struct:
+#             print(s)
+            if(s[0]=='id'):
+                id_idx = i
+            elif(s[0]=='name'):
+                name_idx = i
+            elif(s[0]=='ip'):
+                ip_idx = i
+            elif(s[0]=='port'):
+                port_idx = i
+            elif(s[0]=='platform_id'):
+                plat_id_idx = i
+            i += 1 
+        if(id_idx != -1 and name_idx != -1 and ip_idx != -1 and port_idx != -1 and plat_id_idx != -1):
+#             print id_idx , " -- " , name_idx , " -- " , ip_idx , " -- " , port_idx , " -- " , plat_id_idx
+#             print ""
+            pass
+        else:
+            print("Unable to obtain data from cloudminer.platform, terminating now...")
+            #throw error and quit!!
+            
+        self.machine_DDBB_id = -1    
+        for row in self.cur:
+#             print row[id_idx] , " -- " , row[name_idx] , " -- " , row[ip_idx] , " -- " , row[port_idx] , " -- " , row[plat_id_idx]
+#             print ""
+            
+            if(row[name_idx]==self.machine_name and row[ip_idx]==self.address[0] and row[port_idx]==self.address[1] and row[plat_id_idx]==self.platform_DDBB_id):
+                self.machine_DDBB_id = row[id_idx]
+                
+        #self.conn.commit()
+        if(self.machine_DDBB_id == -1):
+            query = "INSERT INTO machine (name, ip, port, alive, platform_id) VALUES (" \
+                             + "'" + self.machine_name + "', " \
+                             + "'" + self.address[0] + "'," \
+                             + str(self.address[1]) + "," \
+                             + "'T'," \
+                             + str(self.platform_DDBB_id) + ");"
+#             print query
+#             print ""
+            self.cur.execute(query)
+            self.conn_mysql.commit()
+            
+            query = "SELECT id FROM machine WHERE " \
+                             + "name = '" + self.machine_name + "' " \
+                             + " AND ip = '" + self.address[0] + "'" \
+                             + " AND port = " + str(self.address[1]) \
+                             + " AND platform_id = " + str(self.platform_DDBB_id) + ";"
+#             print query
+#             print ""
+            self.cur.execute(query)
+            for row in self.cur:
+                if(self.machine_DDBB_id == -1):
+                    self.machine_DDBB_id = row[0]
+        else:
+            query = "UPDATE machine SET alive = 'T' WHERE id = " + str(self.machine_DDBB_id) + ";"
+            self.cur.execute(query)
+            self.conn_mysql.commit()
+            
+        print "machine_DDBB_id: " , self.machine_DDBB_id
+        print ""
+    
+    def ddbb_obtain_platform_id(self):
+        self.cur.execute("SELECT * FROM platform")
+        struct = self.cur.description
+        i = 0;
+        id_idx = -1
+        os_idx = -1
+        type_idx = -1
+        arch_idx = -1
+        version_idx = -1
+        for s in struct:
+#             print(s)
+            if(s[0]=='id'):
+                id_idx = i
+            elif(s[0]=='os'):
+                os_idx = i
+            elif(s[0]=='type'):
+                type_idx = i
+            elif(s[0]=='arch'):
+                arch_idx = i
+            elif(s[0]=='version'):
+                version_idx = i
+            i += 1 
+        if(id_idx != -1 and os_idx != -1 and type_idx != -1 and arch_idx != -1 and version_idx != -1):
+#             print id_idx , " -- " , os_idx , " -- " , type_idx , " -- " , arch_idx , " -- " , version_idx
+            pass
+        else:
+            print("Unable to obtain data from cloudminer.platform, terminating now...")
+            #throw error and quit!!
+            
+        self.platform_DDBB_id = -1    
+        for row in self.cur:
+#             print row[id_idx] , " -- " , row[os_idx] , " -- " , row[type_idx] , " -- " , row[arch_idx] , " -- " , row[version_idx]
+            
+            if(row[os_idx]==self.platform and row[type_idx]==self.plat_type and row[arch_idx]==self.plat_arch and row[version_idx]==self.plat_version):
+                self.platform_DDBB_id = row[id_idx]
         
-        import os
-        print os.path.dirname(__file__)
+        #self.conn.commit()
+        if(self.platform_DDBB_id == -1):
+            #self.cur = self.conn_mysql.cursor()
+            self.cur.execute("INSERT INTO platform (os, type, arch, version) VALUES (" \
+                             + "'" + self.platform + "', " \
+                             + "'" + self.plat_type + "'," \
+                             + "'" + self.plat_arch + "'," \
+                             + "'" + self.plat_version + "');")
+            self.conn_mysql.commit()
+            self.cur.execute("SELECT id FROM platform WHERE " \
+                             + "os = '" + self.platform + "' " \
+                             + " AND type = '" + self.plat_type + "'" \
+                             + " AND arch = '" + self.plat_arch + "'" \
+                             + " AND version = '" + self.plat_version + "';")
+            for row in self.cur:
+                if(self.platform_DDBB_id == -1):
+                    self.platform_DDBB_id = row[0]
         
-        return
+        print "platform_DDBB_id: " , self.platform_DDBB_id
+    
+    
+    def ddbb_delete_machine(self):
+        if(self.machine_DDBB_id!=None):
+            query = "DELETE FROM machine WHERE id = " + str(self.machine_DDBB_id) + ";"
+    #         print query
+            self.cur.execute(query)
+            self.conn_mysql.commit()
+        else:
+            print " <ERROR> unable to delete machine (machine_id not set)"
+    
+    
+    def ddbb_machine_end(self):
+        if(self.machine_DDBB_id!=None):
+            query = "UPDATE machine SET alive = 'F' WHERE id = " + str(self.machine_DDBB_id) + ";"
+            self.cur.execute(query)
+            self.conn_mysql.commit()
+        else:
+            print " <ERROR> unable to delete machine (machine_id not set)"
     
     def get_worker_id(self):
         return self.id_worker
@@ -88,6 +266,14 @@ class WorkerNode(asyncore.dispatcher):
         self.close()
         return
 
+
+    def quit(self):
+        #self.ddbb_delete_machine()
+        self.ddbb_machine_end()
+        self.cur.close()
+        self.controller.quit()
+        self.conn_mysql.close()
+        
 
 class WorkerHandler(asyncore.dispatcher):
     """Handles command messages from a single client."""
@@ -160,7 +346,8 @@ class WorkerHandler(asyncore.dispatcher):
 
 def exit_handler(worker):
     print 'ending application :: ' +worker.get_worker_id()+ '!!'
-    worker.controller.quit()
+    worker.quit()
+    #worker.controller.quit()
         
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG,
