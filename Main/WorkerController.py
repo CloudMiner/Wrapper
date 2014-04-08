@@ -346,7 +346,7 @@ class WorkerController(object):
         return worker_id
         
         
-    def test_miner(self, miner_id):
+    def test_worker(self, miner_id):
         if (miner_id == None):
             print ' <ERROR> unknown miner, unable to test it'
             return None

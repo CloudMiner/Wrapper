@@ -7,15 +7,16 @@ Created on 14/11/2013
 @author: hackturo
 '''
 
-import re
-import logging
+from TaskMaster import TaskMaster
+from time import sleep
 import asyncore
+import logging
 import pymongo
 import pymysql
 import random
+import re
+import sys
 
-from time import sleep
-from TaskMaster import TaskMaster
 
 
 def send_task(addr, task):
@@ -187,11 +188,12 @@ def ask_worker(machine_id):
     conn_mysql = ddbb_connection()
     cur = conn_mysql.cursor()
     
-    query = "SELECT M.name AS miner, C.name, W.id AS currency " \
-                +" FROM worker W, miner M, currency C " \
+    query = "SELECT M.name AS miner, C.name AS currency, W.id, P.name AS pool " \
+                +" FROM worker W, miner M, currency C, pool P " \
                 +" WHERE W.machine_id = " + str(machine_id) \
                     +" AND W.time_stop IS NULL" \
                     +" AND W.miner_id = M.id" \
+                    +" AND P.id = M.pool_id " \
                     +" AND M.currency_id = C.id;"
     cur.execute(query)
     
@@ -200,14 +202,19 @@ def ask_worker(machine_id):
     for row in cur:
 #         print row[id_idx] , " -- " , row[name_idx] , " -- " , row[ip_idx] , " -- " , row[port_idx] , " -- " , row[plat_id_idx]
 #         print ""
-        miner_menu.append(row[0]+" -- "+row[1]) 
+        miner_menu.append(row[0]+" -- "+row[1]+" -- "+row[3]) 
         worker_list.append(row[2])
     
     #miner_menu = ['minerd (CPUminer)', 'bfgminer (GPU)', 'Back']
     if not miner_menu:
-        print 'There are no alive machines at the moment...'
         print ''
+        print 'There are no alive machines (or running workers) at the moment!'
+        print ''
+        sys.stdout.flush()
+        sleep(1.5)
         return 'Back'
+    
+    miner_menu.append('Back')
     choice = query_input('CHOOSE A WORKER', miner_menu)
     if choice > 0 and choice <= len(miner_menu):
         return str(worker_list[choice-1])
@@ -215,6 +222,7 @@ def ask_worker(machine_id):
         return 'Back'
     else:
         print ' <ERR> Invalid worker...'
+        print ''
         
 #     if choice == 1:
         #return 'm_cpu'
@@ -231,10 +239,49 @@ def ask_worker(machine_id):
 
 
 
-def ask_miner():
-    miner_menu = ['minerd (CPUminer)', 'bfgminer (GPU)', 'Back']
+def ask_miner(machine_id):
+    conn_mysql = ddbb_connection()
+    cur = conn_mysql.cursor()
+    
+    query = "SELECT Mi.id, Mi.name AS miner, C.name AS currency, Po.name " \
+                +" FROM miner Mi, currency C, platform Pl, machine Ma, pool Po " \
+                +" WHERE Ma.id = " + str(machine_id) \
+                    +" AND Pl.id = Mi.platform_id" \
+                    +" AND Pl.id = Ma.platform_id " \
+                    +" AND Po.id = Mi.pool_id " \
+                    +" AND Ma.alive = 'T' " \
+                    +" AND Mi.currency_id = C.id;"
+    cur.execute(query)
+    
+    miner_menu = []
+    miner_list = []
+    for row in cur:
+#         print row[id_idx] , " -- " , row[name_idx] , " -- " , row[ip_idx] , " -- " , row[port_idx] , " -- " , row[plat_id_idx]
+#         print ""
+        miner_menu.append(row[1]+" -- "+row[2]+" -- "+row[3]) 
+        miner_list.append(row[0])
+    
+    #miner_menu = ['minerd (CPUminer)', 'bfgminer (GPU)', 'Back']
+    if not miner_menu:
+        print ''
+        print 'There are no alive machines (or available miners) at the moment!'
+        print ''
+        sys.stdout.flush()
+        sleep(1.5)
+        return 'Back'
+    
+    miner_menu.append('Back')
+    #miner_menu = ['minerd (CPUminer)', 'bfgminer (GPU)', 'Back']
     choice = query_input('CHOOSE A MINER', miner_menu)
-    if choice == 1:
+    if choice > 0 and choice < len(miner_menu):
+        return str(miner_list[choice-1])
+    elif choice == len(miner_menu):
+        return 'Back'
+    else:
+        print ' <ERR> Invalid miner...'
+        print ''
+    
+    '''if choice == 1:
         #return 'm_cpu'
         #return '11232'
         return '1'
@@ -246,14 +293,14 @@ def ask_miner():
         return 'Back'
     else:
         print ' <ERR> Invalid miner...'
-
+    '''
 
 def ask_command(address, machine_id):
     cmd = ''
     cmd_menu = ['Start miner', 'Stop miner', 'Test miner', 'Terminate worker', 'Back']
     choice = query_input('CHOOSE A COMMAND', cmd_menu)
     if choice == 1 or choice == 3: #or choice == 2 
-        miner = ask_miner()
+        miner = ask_miner(machine_id)
         if miner==None or miner=='Back':
             return None   
     if choice == 1:
@@ -272,7 +319,8 @@ def ask_command(address, machine_id):
     elif choice == 5:
         return 'Back'
     else:
-        print '[ERR] Invalid command...'
+        print ' <ERROR> Invalid command...'
+        print ''
         return None
 
     send_task(address, cmd)
@@ -283,8 +331,11 @@ def ask_connection():
     connection_menu = []
     address_list = ddbb_retrieve_connections()
     if(len(address_list)<1):
-        print 'There are no alive machines at the moment...'
         print ''
+        print 'There are no alive machines at the moment!'
+        print ''
+        sys.stdout.flush()
+        sleep(1.5)
         return None
     else:
         for con in address_list:
@@ -378,7 +429,8 @@ if __name__ == '__main__':
     subtitle = '    Head Node v0.3 alpha    '
     #main_menu = ['Send command', 'View status', 'Exit']
     #if worker_configured:
-    main_menu = ['Connections setup', 'Send command', 'View worker status', 'Exit']
+    #main_menu = ['Connections setup', 'Send command', 'View worker status', 'Exit']
+    main_menu = ['Send command', 'View worker status', 'Exit']
     #else:
     #    main_menu = ['Connection setup', 'Exit']
 
@@ -392,7 +444,7 @@ if __name__ == '__main__':
 
         # Main Menu options
 
-        if choice == 1:
+        '''if choice == 1:
             #print 'You chose \'Connections setup\''
             print 'You chose \"'+ main_menu[0] +'\"'
             #connection_number = ask_connection(address_list,True)
@@ -410,7 +462,8 @@ if __name__ == '__main__':
                 elif connection_number != -1:
                     print connection_number
                     config_connection(connection_number, address_list)
-        elif choice == 2:
+        elif choice == 2:'''
+        if choice == 1:
             #print 'You chose \'Send command\''
             print 'You chose \"'+ main_menu[1] +'\"'
             #address = ask_address()
@@ -428,14 +481,14 @@ if __name__ == '__main__':
                     go_back = ask_command(address, address_list[connection_number-1]['machine_id']) == 'Back'
             #else:
             #    print 'No connections configured...'
-        elif choice == 3:
+        elif choice == 2:
             #print 'You chose \'View worker status\''
             print 'You chose \"'+ main_menu[2] +'\"'
             #worker = choice = raw_input('Enter worker\'s id: ')
             #ddbb_retrieve_worker_status(worker)
             #ddbb_retrieve_worker_status('WORKER1')
             ddbb_retrieve_workers_status()
-        elif choice == 4:
+        elif choice == 3:
             is_exit = True
             print 'Exiting...'
             
