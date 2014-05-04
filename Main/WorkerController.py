@@ -69,7 +69,14 @@ class WorkerController(object):
                     #num_lines %= 4
                     num_lines %= self.num_cpus
                     if num_lines == 0:
-                        self.ddbb_insert_worker_stats(hash_rate,worker_id)
+                        hash_and_count = self.ddbb_get_avg_hash_rate(worker_id)
+                        if(hash_and_count != (None,None)):
+                            count = hash_and_count[1]
+                            avg_hash_rate = ((hash_and_count[0]*count)+hash_rate)/(count+1)
+                            count += 1 
+                            self.ddbb_insert_worker_stats(hash_rate,avg_hash_rate,count,worker_id)
+                        else:
+                            print '<ERROR> Unable to retrieve avg_hash_rate and count'
                         print str(hash_rate)
                         hash_rate = 0  # reset hash count
                 else:
@@ -139,14 +146,16 @@ class WorkerController(object):
             print '\'worker_id\' not set!! (cannot remove worker from activity in DDBB)'
 
 
-    def ddbb_insert_worker_stats(self, hash_rate, worker_id):
-        if(worker_id != None and hash_rate != None):
+    def ddbb_insert_worker_stats(self, hash_rate, avg_hash_rate, hash_rate_count, worker_id):
+        if(worker_id != None and hash_rate != None and avg_hash_rate != None and hash_rate_count != None):
             ts = time.time()
             ts2 = str(datetime.datetime.fromtimestamp(ts))
             ts3 = ts2[0:ts2.find('.')]
-            query = "INSERT INTO worker_stats (worker_id, hash_rate, timestamp) VALUES (" \
+            query = "INSERT INTO worker_stats (worker_id, hash_rate, hash_avg, hash_count, timestamp) VALUES (" \
                         + str(worker_id) + "," \
                         + str(hash_rate) + "," \
+                        + str(avg_hash_rate) + "," \
+                        + str(hash_rate_count) + "," \
                         + "'" + ts3 + "');"
             
             self.cur.execute(query)
@@ -195,6 +204,28 @@ class WorkerController(object):
             return currency
         else:
             print ' <ERROR> unknown miner_id while getting currency from DDBB'
+        
+
+    def ddbb_get_avg_hash_rate(self, worker_id):
+        if (worker_id != None):
+            avg_hash = None
+            count = None
+            query = "SELECT t0.hash_avg, t0.hash_count " \
+                    + "FROM worker_stats t0 " \
+                    + "WHERE t0.worker_id = " + str(worker_id) \
+                        + " AND t0.timestamp = (SELECT MAX(t1.timestamp) " \
+                                            +" FROM worker_stats t1 " \
+                                            + "WHERE t0.worker_id=t1.worker_id); "
+            #print query
+            self.cur.execute(query)
+            for row in self.cur:
+                if(avg_hash == None):
+                    avg_hash = row[0]
+                    count = row[1]
+            return (avg_hash,count)
+        else:
+            print ' <ERROR> Unable to calculate avg hash_rate'
+            return None
         
 
     def add_worker(self, miner_id):
@@ -258,6 +289,7 @@ class WorkerController(object):
         if(worker_id == None):
             print ' <ERROR> miner variables not set in dict, unable to start it'
             return None
+        self.ddbb_insert_worker_stats(0, 0, 0, worker_id)
         self.actual_worker_vars[worker_id]['t_monitor'].start()
 
 

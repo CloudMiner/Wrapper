@@ -60,25 +60,6 @@ def ddbb_retrieve_workers_status():#worker_id):
         sys.stdout.flush()
         sleep(1.5)
         return
-        
-    '''db_connection = pymongo.Connection('localhost', 27017)
-    cloudminerDB = db_connection.cloudminerDB
-    col_active_workers = cloudminerDB['col_active_workers']
-    cols_w = col_active_workers.find().sort("start_time2",-1)
-    for col_w in cols_w:
-        print "\""+col_w['id_worker']+"\" (alive since: "+col_w['start_time']+") -->"
-        col_active_miners = cloudminerDB['col_active_miners']    
-        cols_m = col_active_miners.find({"id_worker":col_w['id_worker']}).sort("start_time2",-1)
-        #col_m = next(cols_m, None)
-        #if col_m:
-        for col_m in cols_m:
-            print "  - \""+col_m['id_miner']+"\" started at: "+col_m['start_time']
-            print "    - currency:"+col_m['currency']
-            col_worker_stats = cloudminerDB['col_worker_stats']
-            cols_s = col_worker_stats.find({"id_worker":col_w['id_worker'],"id_miner":col_m['id_miner']}).sort("start_time2",-1)
-            col_s = next(cols_s, None)
-            if col_s:
-                print "    - hashing rate: "+str(col_s['hash_rate'])+" MH/s" '''
 
 def ddbb_retrieve_connections():
     address_list = []

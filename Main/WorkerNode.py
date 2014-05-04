@@ -56,10 +56,10 @@ class WorkerNode(asyncore.dispatcher):
         self.platform = platform.system()
         if(self.platform.find('Windows')):
             self.plat_type = platform.linux_distribution()[0]
-            self.plat_version = platform.linux_distribution()[1]
+#             self.plat_version = platform.linux_distribution()[1]
         elif(self.platform.find('Linux')):
             self.plat_type = "unique"
-            self.plat_version = platform.win32_ver()[0] 
+#             self.plat_version = platform.win32_ver()[0] 
         else:
             pass
 
@@ -156,55 +156,24 @@ class WorkerNode(asyncore.dispatcher):
         print ""
     
     def ddbb_obtain_platform_id(self):
-        self.cur.execute("SELECT * FROM platform")
-        struct = self.cur.description
-        i = 0;
-        id_idx = -1
-        os_idx = -1
-        type_idx = -1
-        arch_idx = -1
-        version_idx = -1
-        for s in struct:
-#             print(s)
-            if(s[0]=='id'):
-                id_idx = i
-            elif(s[0]=='os'):
-                os_idx = i
-            elif(s[0]=='type'):
-                type_idx = i
-            elif(s[0]=='arch'):
-                arch_idx = i
-            elif(s[0]=='version'):
-                version_idx = i
-            i += 1 
-        if(id_idx != -1 and os_idx != -1 and type_idx != -1 and arch_idx != -1 and version_idx != -1):
-#             print id_idx , " -- " , os_idx , " -- " , type_idx , " -- " , arch_idx , " -- " , version_idx
-            pass
-        else:
-            print("Unable to obtain data from cloudminer.platform, terminating now...")
-            #throw error and quit!!
+        self.cur.execute("SELECT id,os,type,arch FROM platform")
             
         self.platform_DDBB_id = -1    
         for row in self.cur:
-#             print row[id_idx] , " -- " , row[os_idx] , " -- " , row[type_idx] , " -- " , row[arch_idx] , " -- " , row[version_idx]
-            
-            if(row[os_idx]==self.platform and row[type_idx]==self.plat_type and row[arch_idx]==self.plat_arch and row[version_idx]==self.plat_version):
-                self.platform_DDBB_id = row[id_idx]
+            if(row[1]==self.platform and row[2]==self.plat_type and row[3]==self.plat_arch):
+                self.platform_DDBB_id = row[0]
         
         #self.conn.commit()
         if(self.platform_DDBB_id == -1):
-            #self.cur = self.conn_mysql.cursor()
-            self.cur.execute("INSERT INTO platform (os, type, arch, version) VALUES (" \
+            self.cur.execute("INSERT INTO platform (os, type, arch) VALUES (" \
                              + "'" + self.platform + "', " \
                              + "'" + self.plat_type + "'," \
-                             + "'" + self.plat_arch + "'," \
-                             + "'" + self.plat_version + "');")
+                             + "'" + self.plat_arch + "');")
             self.conn_mysql.commit()
             self.cur.execute("SELECT id FROM platform WHERE " \
                              + "os = '" + self.platform + "' " \
                              + " AND type = '" + self.plat_type + "'" \
-                             + " AND arch = '" + self.plat_arch + "'" \
-                             + " AND version = '" + self.plat_version + "';")
+                             + " AND arch = '" + self.plat_arch + "';" )
             for row in self.cur:
                 if(self.platform_DDBB_id == -1):
                     self.platform_DDBB_id = row[0]
