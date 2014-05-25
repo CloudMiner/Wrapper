@@ -73,46 +73,51 @@ class WorkerNode(asyncore.dispatcher):
         self.conn_mysql = pymysql.connect(host='127.0.0.1', port=3306, user='clminer', passwd='cloudminer2014', db='cloudminer')
         self.cur = self.conn_mysql.cursor()
         
-        self.ddbb_obtain_platform_id()
-        self.ddbb_obtain_machine_id()
-        
-        #cur.execute("INSERT INTO machine (name, ip, port, platform_id) VALUES ()")
-        
-        self.parser = WorkerParser.WorkerParser()
-        self.controller = \
-            WorkerController.WorkerController(invoker=self)
-        self.logger.debug('binding to %s', self.address)
-        self.listen(1)
+        if(self.ddbb_obtain_platform_id()):
+            self.ddbb_obtain_machine_id()
+            
+            #cur.execute("INSERT INTO machine (name, ip, port, platform_id) VALUES ()")
+            
+            self.parser = WorkerParser.WorkerParser()
+            self.controller = \
+                WorkerController.WorkerController(invoker=self)
+            self.logger.debug('binding to %s', self.address)
+            self.listen(1)
+        else:
+            self.machine_DDBB_id = None
+            self.parser = None
+            self.controller = None
+            self.handle_close()
         return 
     
     def ddbb_obtain_machine_id(self):
-        self.cur.execute("SELECT * FROM machine")
-        struct = self.cur.description
-        i = 0;
-        id_idx = -1
-        name_idx = -1
-        ip_idx = -1
-        port_idx = -1
-        plat_id_idx = -1
-        for s in struct:
-#             print(s)
-            if(s[0]=='id'):
-                id_idx = i
-            elif(s[0]=='name'):
-                name_idx = i
-            elif(s[0]=='ip'):
-                ip_idx = i
-            elif(s[0]=='port'):
-                port_idx = i
-            elif(s[0]=='platform_id'):
-                plat_id_idx = i
-            i += 1 
-        if(id_idx != -1 and name_idx != -1 and ip_idx != -1 and port_idx != -1 and plat_id_idx != -1):
-#             print id_idx , " -- " , name_idx , " -- " , ip_idx , " -- " , port_idx , " -- " , plat_id_idx
-#             print ""
-            pass
-        else:
-            print("Unable to obtain data from cloudminer.platform, terminating now...")
+        self.cur.execute("SELECT id, name, platform_id FROM machine")
+#         struct = self.cur.description
+#         i = 0;
+#         id_idx = -1
+#         name_idx = -1
+#         ip_idx = -1
+#         port_idx = -1
+#         plat_id_idx = -1
+#         for s in struct:
+# #             print(s)
+#             if(s[0]=='id'):
+#                 id_idx = i
+#             elif(s[0]=='name'):
+#                 name_idx = i
+#             elif(s[0]=='ip'):
+#                 ip_idx = i
+#             elif(s[0]=='port'):
+#                 port_idx = i
+#             elif(s[0]=='platform_id'):
+#                 plat_id_idx = i
+#             i += 1 
+#         if(id_idx != -1 and name_idx != -1 and ip_idx != -1 and port_idx != -1 and plat_id_idx != -1):
+# #             print id_idx , " -- " , name_idx , " -- " , ip_idx , " -- " , port_idx , " -- " , plat_id_idx
+# #             print ""
+#             pass
+#         else:
+#             print("Unable to obtain data from cloudminer.platform, terminating now...")
             #throw error and quit!!
             
         self.machine_DDBB_id = -1    
@@ -120,11 +125,22 @@ class WorkerNode(asyncore.dispatcher):
 #             print row[id_idx] , " -- " , row[name_idx] , " -- " , row[ip_idx] , " -- " , row[port_idx] , " -- " , row[plat_id_idx]
 #             print ""
             
-            if(row[name_idx]==self.machine_name and row[ip_idx]==self.address[0] and row[port_idx]==self.address[1] and row[plat_id_idx]==self.platform_DDBB_id):
-                self.machine_DDBB_id = row[id_idx]
+#             if(row[name_idx]==self.machine_name and row[ip_idx]==self.address[0] and row[port_idx]==self.address[1] and row[plat_id_idx]==self.platform_DDBB_id):
+            if(row[1]==self.machine_name and row[2]==self.platform_DDBB_id):
+                self.machine_DDBB_id = row[0]
+                break
                 
         #self.conn.commit()
-        if(self.machine_DDBB_id == -1):
+        if(self.machine_DDBB_id != -1):
+            query = "UPDATE machine SET ip = '" + self.address[0] + "', " \
+                             + "port = " + str(self.address[1]) + ", " \
+                             + "alive = 'T' " \
+                             + "WHERE id = " + str(self.machine_DDBB_id) + ";"
+#             print query
+#             print ""
+            self.cur.execute(query)
+            self.conn_mysql.commit()
+        else:
             query = "INSERT INTO machine (name, ip, port, alive, platform_id) VALUES (" \
                              + "'" + self.machine_name + "', " \
                              + "'" + self.address[0] + "'," \
@@ -147,10 +163,10 @@ class WorkerNode(asyncore.dispatcher):
             for row in self.cur:
                 if(self.machine_DDBB_id == -1):
                     self.machine_DDBB_id = row[0]
-        else:
-            query = "UPDATE machine SET alive = 'T' WHERE id = " + str(self.machine_DDBB_id) + ";"
-            self.cur.execute(query)
-            self.conn_mysql.commit()
+#         else:
+#             query = "UPDATE machine SET alive = 'T' WHERE id = " + str(self.machine_DDBB_id) + ";"
+#             self.cur.execute(query)
+#             self.conn_mysql.commit()
             
         print "machine_DDBB_id: " , self.machine_DDBB_id
         print ""
@@ -162,23 +178,28 @@ class WorkerNode(asyncore.dispatcher):
         for row in self.cur:
             if(row[1]==self.platform and row[2]==self.plat_type and row[3]==self.plat_arch):
                 self.platform_DDBB_id = row[0]
+                break
         
         #self.conn.commit()
         if(self.platform_DDBB_id == -1):
-            self.cur.execute("INSERT INTO platform (os, type, arch) VALUES (" \
-                             + "'" + self.platform + "', " \
-                             + "'" + self.plat_type + "'," \
-                             + "'" + self.plat_arch + "');")
-            self.conn_mysql.commit()
-            self.cur.execute("SELECT id FROM platform WHERE " \
-                             + "os = '" + self.platform + "' " \
-                             + " AND type = '" + self.plat_type + "'" \
-                             + " AND arch = '" + self.plat_arch + "';" )
-            for row in self.cur:
-                if(self.platform_DDBB_id == -1):
-                    self.platform_DDBB_id = row[0]
-        
-        print "platform_DDBB_id: " , self.platform_DDBB_id
+            print " <WARNING> There are no platforms matching this system on DDBB, "
+            print " please enter the management site and add it accordingly."
+            return False
+#             self.cur.execute("INSERT INTO platform (os, type, arch) VALUES (" \
+#                              + "'" + self.platform + "', " \
+#                              + "'" + self.plat_type + "'," \
+#                              + "'" + self.plat_arch + "');")
+#             self.conn_mysql.commit()
+#             self.cur.execute("SELECT id FROM platform WHERE " \
+#                              + "os = '" + self.platform + "' " \
+#                              + " AND type = '" + self.plat_type + "'" \
+#                              + " AND arch = '" + self.plat_arch + "';" )
+#             for row in self.cur:
+#                 if(self.platform_DDBB_id == -1):
+#                     self.platform_DDBB_id = row[0]
+        else:
+            print "platform_DDBB_id: " , self.platform_DDBB_id
+            return True
     
     
     def ddbb_delete_machine(self):
@@ -188,7 +209,7 @@ class WorkerNode(asyncore.dispatcher):
             self.cur.execute(query)
             self.conn_mysql.commit()
         else:
-            print " <ERROR> unable to delete machine (machine_id not set)"
+            print " <WARNING> unable to delete machine (machine_id not set)"
     
     
     def ddbb_machine_end(self):
@@ -197,7 +218,7 @@ class WorkerNode(asyncore.dispatcher):
             self.cur.execute(query)
             self.conn_mysql.commit()
         else:
-            print " <ERROR> unable to delete machine (machine_id not set)"
+            print " <WARNING> unable to delete machine (machine_id not set)"
     
     def get_worker_id(self):
         return self.id_worker
@@ -239,9 +260,12 @@ class WorkerNode(asyncore.dispatcher):
     def quit(self):
         #self.ddbb_delete_machine()
         self.ddbb_machine_end()
-        self.cur.close()
-        self.controller.quit()
-        self.conn_mysql.close()
+        if(self.cur != None):
+            self.cur.close()    
+        if(self.controller != None):
+            self.controller.quit()
+        if(self.conn_mysql!=None):
+            self.conn_mysql.close()
         
 
 class WorkerHandler(asyncore.dispatcher):
@@ -314,8 +338,11 @@ class WorkerHandler(asyncore.dispatcher):
         self.work()  # work after close this socket
 
 def exit_handler(worker):
-    print 'ending application :: ' +worker.get_worker_id()+ '!!'
-    worker.quit()
+    if(worker != None):
+        print 'ending application :: ' +worker.get_worker_id()+ '!!'
+        worker.quit()
+    else:
+        print 'ending application'
     #worker.controller.quit()
         
 if __name__ == '__main__':

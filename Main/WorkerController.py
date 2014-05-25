@@ -127,8 +127,12 @@ class WorkerController(object):
             for row in self.cur:
                 if(worker_id == -1):
                     worker_id = row[0]
-            print 'Item inserted!!! (worker_id=' , worker_id , ')'
-            return worker_id
+            if(worker_id == -1):
+                print '<ERROR> unable insert the new worker in the DDBB (miner_id =', miner_id, ')' 
+                return None
+            else:
+                print 'Item inserted!!! (worker_id=' , worker_id , ')'
+                return worker_id
         else:
             print '\'machine_id\' not set!! (cannot insert a new worker in DDBB)' 
             return None
@@ -227,6 +231,32 @@ class WorkerController(object):
             print ' <ERROR> Unable to calculate avg hash_rate'
             return None
         
+    def ddbb_check_working(self,worker_id):
+        if (worker_id != None):
+            hash_rate = None
+            query = "SELECT t0.hash_rate " \
+                    + "FROM worker_stats t0 " \
+                    + "WHERE t0.worker_id = " + str(worker_id) \
+                        + " AND t0.timestamp = (SELECT MAX(t1.timestamp) " \
+                                            +" FROM worker_stats t1 " \
+                                            + "WHERE t0.worker_id=t1.worker_id); "
+            #print query
+            self.cur.execute(query)
+            for row in self.cur:
+                if(hash_rate == None):
+                    hash_rate = row[0]
+            if hash_rate > 0:
+                query =  "UPDATE worker " \
+                        + "SET tested = 'T'" \
+                        + "WHERE id = " + str(worker_id) + ";"
+            else:
+                query =  "UPDATE worker " \
+                        + "SET tested = 'F'" \
+                        + "WHERE id = " + str(worker_id) + ";"
+            self.cur.execute(query)
+        else:
+            print ' <WARNING> Unable to check if worker is working properly (worker_id =', str(worker_id), ')'
+            return None
 
     def add_worker(self, miner_id):
         if (miner_id == None):
@@ -291,6 +321,8 @@ class WorkerController(object):
             return None
         self.ddbb_insert_worker_stats(0, 0, 0, worker_id)
         self.actual_worker_vars[worker_id]['t_monitor'].start()
+#         sleep(30)
+#         self.ddbb_check_working(worker_id)
 
 
     def delete_worker(self, worker_id):
