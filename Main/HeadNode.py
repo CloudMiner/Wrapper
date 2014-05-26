@@ -199,11 +199,11 @@ def ask_worker(machine_id):
 def ask_miner(machine_id):
     conn_mysql = ddbb_connection()
     cur = conn_mysql.cursor()
-    
+    #+" AND Pl.id = Mi.platform_id" \
     query = "SELECT Mi.id, Mi.name AS miner, C.name AS currency, Po.name " \
                 +" FROM miner Mi, currency C, platform Pl, machine Ma, pool Po " \
                 +" WHERE Ma.id = " + str(machine_id) \
-                    +" AND Pl.id = Mi.platform_id" \
+                    +" AND Pl.group_id = Mi.plat_group_id" \
                     +" AND Pl.id = Ma.platform_id " \
                     +" AND Po.id = Mi.pool_id " \
                     +" AND Ma.alive = 'T' " \

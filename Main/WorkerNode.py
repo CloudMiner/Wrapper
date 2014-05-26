@@ -172,12 +172,14 @@ class WorkerNode(asyncore.dispatcher):
         print ""
     
     def ddbb_obtain_platform_id(self):
-        self.cur.execute("SELECT id,os,type,arch FROM platform")
+        self.cur.execute("SELECT id,os,type,arch,group_id FROM platform")
             
-        self.platform_DDBB_id = -1    
+        self.platform_DDBB_id = -1 
+        self.plat_group_DDBB_id = -1
         for row in self.cur:
             if(row[1]==self.platform and row[2]==self.plat_type and row[3]==self.plat_arch):
                 self.platform_DDBB_id = row[0]
+                self.plat_group_DDBB_id = row[4]
                 break
         
         #self.conn.commit()
