@@ -51,7 +51,8 @@ class WorkerNode(asyncore.dispatcher):
         self.machine_name = socket.gethostname()
         #print "ADDRESS: "
         #print self.address
-        self.is64bits  = sys.maxsize > 2 ** 32
+        #self.is64bits  = sys.maxsize > 2 ** 32
+        self.is64bits = platform.machine().endswith('64')
         self.num_cpus = multiprocessing.cpu_count()
         self.platform = platform.system()
         if(self.platform.find('Windows')):
