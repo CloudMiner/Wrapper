@@ -352,7 +352,11 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG,
                         format='%(name)s: %(message)s')
 
-    address_server = ('0.0.0.0', 0)
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(('8.8.8.8', 80))
+    local_ip = (s.getsockname()[0])
+    s.close()
+    address_server = (local_ip, 0)
     w = WorkerNode(address_server)
     atexit.register(exit_handler, w)
     asyncore.loop()
