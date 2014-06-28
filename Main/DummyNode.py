@@ -17,16 +17,16 @@ import pymysql
 import subprocess
 import threading
 import multiprocessing
-from time import sleep
 import atexit
 import logging
-import sys
 #import time
 import os
 import platform
 
 
-def ddbb_insert_worker_stats( hash_rate, avg_hash_rate, hash_rate_count, worker_id):
+def ddbb_insert_worker_stats(conn_mysql, cur, hash_rate, avg_hash_rate, hash_rate_count, worker_id):
+    #conn_mysql = pymysql.connect(host='127.0.0.1', port=3306, user='clminer', passwd='cloudminer2014', db='cloudminer')
+    #cur = conn_mysql.cursor()
     if(worker_id != None and hash_rate != None and avg_hash_rate != None and hash_rate_count != None):
         ts = time.time()
         ts2 = str(datetime.datetime.fromtimestamp(ts))
@@ -38,19 +38,24 @@ def ddbb_insert_worker_stats( hash_rate, avg_hash_rate, hash_rate_count, worker_
                     + str(hash_rate_count) + "," \
                     + "'" + ts3 + "');"
         
-        self.cur.execute(query)
-        self.conn_mysql.commit()
+        cur.execute(query)
+        conn_mysql.commit()
         print 'Item inserted!!!'
     else:
         print 'incorrect values (cannot insert new worker_stats in DDBB)' 
 
 
-
-
-
-
-
-
+def ddbb_insert_stats():
+    conn_mysql = pymysql.connect(host='127.0.0.1', port=3306, user='clminer', passwd='cloudminer2014', db='cloudminer')
+    cur = conn_mysql.cursor()
+    query = "SELECT w.id, c.algorithm FROM worker w, miner m, currency c WHERE (time_stop IS NULL OR time_stop > NOW()) AND w.miner_id=m.id AND m.currency_id=c.id"
+    cur.execute(query)
+    for row in cur:
+        id = row[0]
+        hash_rate = 
+        if(row[1]=='SHA-256d'):
+            
+        ddbb_insert_worker_stats(conn_mysql, cur, hash_rate, avg_hash_rate, hash_rate_count, id)
 
 
 if __name__ == '__main__':
