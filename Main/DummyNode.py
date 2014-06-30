@@ -22,25 +22,46 @@ import logging
 #import time
 import os
 import platform
+import random
 
 
-def ddbb_insert_worker_stats(conn_mysql, cur, hash_rate, avg_hash_rate, hash_rate_count, worker_id):
+def ddbb_get_avg_hash_rate(worker_id, cur):
+    #cur = conn_mysql.cursor()
+    if (worker_id != None):
+        avg_hash = None
+        count = None
+        query = "SELECT t0.hash_avg, t0.hash_count " \
+                    + "FROM worker_stats t0 " \
+                    + "WHERE t0.worker_id = " + str(worker_id) \
+                        + " AND t0.timestamp = (SELECT MAX(t1.timestamp) " \
+                                            +" FROM worker_stats t1 " \
+                                            + "WHERE t0.worker_id=t1.worker_id); "
+        #print query
+        cur.execute(query)
+        for row in cur:
+            if(avg_hash == None):
+                avg_hash = row[0]
+                count = row[1]
+        return (avg_hash,count)
+    else:
+        print ' <ERROR> Unable to calculate avg hash_rate'
+        return None
+
+def ddbb_insert_worker_stats(conn_mysql, cur, hash_rate, avg_hash_rate, hash_rate_count, worker_id, timestamp):
     #conn_mysql = pymysql.connect(host='127.0.0.1', port=3306, user='clminer', passwd='cloudminer2014', db='cloudminer')
     #cur = conn_mysql.cursor()
     if(worker_id != None and hash_rate != None and avg_hash_rate != None and hash_rate_count != None):
-        ts = time.time()
-        ts2 = str(datetime.datetime.fromtimestamp(ts))
-        ts3 = ts2[0:ts2.find('.')]
         query = "INSERT INTO worker_stats (worker_id, hash_rate, hash_avg, hash_count, timestamp) VALUES (" \
                     + str(worker_id) + "," \
                     + str(hash_rate) + "," \
                     + str(avg_hash_rate) + "," \
                     + str(hash_rate_count) + "," \
-                    + "'" + ts3 + "');"
+                    + "'" + timestamp + "');"
         
         cur.execute(query)
         conn_mysql.commit()
-        print 'Item inserted!!!'
+        print query
+        #print 'Item inserted!!!'
     else:
         print 'incorrect values (cannot insert new worker_stats in DDBB)' 
 
@@ -48,18 +69,49 @@ def ddbb_insert_worker_stats(conn_mysql, cur, hash_rate, avg_hash_rate, hash_rat
 def ddbb_insert_stats():
     conn_mysql = pymysql.connect(host='127.0.0.1', port=3306, user='clminer', passwd='cloudminer2014', db='cloudminer')
     cur = conn_mysql.cursor()
-    query = "SELECT w.id, c.algorithm FROM worker w, miner m, currency c WHERE (time_stop IS NULL OR time_stop > NOW()) AND w.miner_id=m.id AND m.currency_id=c.id"
+    query = "SELECT w.id, c.algorithm, CAST(SUBSTRING(ma.name,7) AS UNSIGNED) work_num FROM worker w, miner m, currency c, machine ma WHERE (time_stop IS NULL OR time_stop > NOW()) AND w.miner_id=m.id AND m.currency_id=c.id AND w.machine_id=ma.id AND LOWER(ma.name) LIKE '%lab%' ORDER BY w.id"
     cur.execute(query)
+    list_rows = []
     for row in cur:
-        id = row[0]
-        hash_rate = 
-        if(row[1]=='SHA-256d'):
-            
-        ddbb_insert_worker_stats(conn_mysql, cur, hash_rate, avg_hash_rate, hash_rate_count, id)
-
+        list_rows.append(row)
+    #print list_rows
+    dict_hashes = {}
+    ts = time.time()
+    ts2 = str(datetime.datetime.fromtimestamp(ts))
+    ts3 = ts2[0:ts2.find('.')]
+    for item in list_rows:
+        hash_and_count = ddbb_get_avg_hash_rate(item[0], cur)
+        if(hash_and_count!=None and hash_and_count!=(None,None)):
+            dict_hashes[item[0]] = hash_and_count
+        else:
+            ddbb_insert_worker_stats(conn_mysql, cur, 0, 0, 0, item[0], ts3)
+            dict_hashes[item[0]] = (0,0)
+    print dict_hashes
+    while True:
+        ts = time.time()
+        ts2 = str(datetime.datetime.fromtimestamp(ts))
+        ts3 = ts2[0:ts2.find('.')]
+        for item in list_rows:
+            id_item = item[0]
+            hash_rate = random.uniform(80, 80 + (item[2]*2)) 
+            if(item[1]=='scrypt'):
+                hash_rate /= 1000
+            #hash_and_count = ddbb_get_avg_hash_rate(id, cur)
+            #hash_and_count = (1,1)
+            hash_and_count = dict_hashes[id_item]
+            if(hash_and_count != None and hash_and_count != (None,None)):
+                count = hash_and_count[1]
+                avg_hash_rate = ((hash_and_count[0]*count)+hash_rate)/(count+1)
+                count += 1
+                ddbb_insert_worker_stats(conn_mysql, cur, hash_rate, avg_hash_rate, count, id_item, ts3)
+                hash_and_count = (avg_hash_rate, count)
+                dict_hashes[id_item] = hash_and_count
+            else:
+                print '<ERROR> Unable to retrieve avg_hash_rate and count'
+        sleep(5)
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG,
+    '''logging.basicConfig(level=logging.DEBUG,
                         format='%(name)s: %(message)s')
 
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -68,7 +120,8 @@ if __name__ == '__main__':
     s.close()
     address_server = (local_ip, 0)
     w = WorkerNode(address_server)
-    atexit.register(exit_handler, w)
+    atexit.register(exit_handler, w)'''
+    ddbb_insert_stats()
     
     
 
